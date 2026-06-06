@@ -1942,3 +1942,61 @@ section {
     justify-content: space-between;
   }
 }
+
+/* Sandbox WASM Status Indicators */
+.sandbox-status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-glass);
+  padding: 6px 12px;
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.state-loading {
+  background-color: var(--accent-gold);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  animation: pulseGold 1.5s infinite;
+}
+
+.status-dot.state-ready {
+  background-color: var(--accent-mint);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+  animation: pulseGreen 2s infinite;
+}
+
+.status-dot.state-fallback {
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+  animation: pulseCyan 2s infinite;
+}
+
+@keyframes pulseGold {
+  0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(251, 191, 36, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+}
+
+@keyframes pulseGreen {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+@keyframes pulseCyan {
+  0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(56, 189, 248, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+}
+

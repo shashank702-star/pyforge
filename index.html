@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Pyodide WebAssembly Python Interpreter -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css">
   <!-- FontAwesome Icons (Via CDN for premium iconography) -->
@@ -329,8 +333,13 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
                 <option value="decorator-timer">Custom Timing Decorator</option>
               </select>
             </div>
+            <!-- Sandbox Status Indicator Badge -->
+            <div class="sandbox-status-badge" id="sandbox-status">
+              <span class="status-dot state-loading"></span>
+              <span class="status-text" id="sandbox-status-text">Loading WASM Core...</span>
+            </div>
             <div class="editor-controls">
-              <button class="btn btn-mint btn-sm" id="run-code-btn"><i class="fa-solid fa-play"></i> Run Code</button>
+              <button class="btn btn-mint btn-sm" id="run-code-btn" disabled><i class="fa-solid fa-play"></i> Run Code</button>
               <button class="btn btn-secondary btn-sm" id="reset-code-btn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
             </div>
           </div>

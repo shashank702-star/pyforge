@@ -21,6 +21,37 @@ document.addEventListener('DOMContentLoaded', () => {
     slideIndex: 0
   };
 
+  let pyodideInstance = null;
+  const runCodeBtn = document.getElementById('run-code-btn');
+  const sandboxStatusDot = document.querySelector('#sandbox-status .status-dot');
+  const sandboxStatusText = document.getElementById('sandbox-status-text');
+
+  async function initPyodide() {
+    try {
+      if (typeof loadPyodide === 'undefined') {
+        throw new Error("WASM script not loaded from CDN.");
+      }
+      pyodideInstance = await loadPyodide({
+        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/"
+      });
+      
+      // Update status elements
+      if (sandboxStatusDot) sandboxStatusDot.className = 'status-dot state-ready';
+      if (sandboxStatusText) sandboxStatusText.textContent = 'Python 3.11 (WASM) Ready';
+      if (runCodeBtn) runCodeBtn.disabled = false;
+      logTerminal(">>> CPython 3.11 WebAssembly Core initialized. Sandbox ready.", "success");
+    } catch (err) {
+      console.warn("WASM Core initialization failed, using Fallback Sandbox mode: ", err);
+      if (sandboxStatusDot) sandboxStatusDot.className = 'status-dot state-fallback';
+      if (sandboxStatusText) sandboxStatusText.textContent = 'Python (Lite Sandbox) Active';
+      if (runCodeBtn) runCodeBtn.disabled = false;
+      logTerminal(">>> Sandbox offline. Loaded local lightweight regex interpreter fallback.", "system");
+    }
+  }
+
+  // Delay initialization slightly to let DOM fully settle
+  setTimeout(initPyodide, 200);
+
   const XP_LEVELS = {
     novice: 0,
     craftsman: 100,
@@ -558,10 +589,48 @@ document.addEventListener('DOMContentLoaded', () => {
     terminalBody.scrollTop = terminalBody.scrollHeight;
   }
 
-  function executePythonCode(code) {
+  async function executePythonCode(code) {
     clearTerminal();
     logTerminal('>>> Running script.py...', 'system');
 
+    if (pyodideInstance) {
+      try {
+        // Prepare stdout/stderr capture in Pyodide
+        await pyodideInstance.runPythonAsync(`
+import sys
+import io
+sys.stdout = io.StringIO()
+sys.stderr = io.StringIO()
+        `);
+
+        // Execute user python script
+        await pyodideInstance.runPythonAsync(code);
+
+        const stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+        const stderr = pyodideInstance.runPython("sys.stderr.getvalue()");
+
+        if (stdout) {
+          logTerminal(stdout, 'val');
+        }
+        if (stderr) {
+          logTerminal(stderr, 'err');
+        }
+
+        if (!stdout && !stderr) {
+          logTerminal("(No stdout printed. Script returned with 0 output statements)", 'val');
+        } else if (!stderr) {
+          logTerminal('\nExecution completed successfully.', 'success');
+          addXP(25);
+        }
+      } catch (err) {
+        logTerminal(err.message, 'err');
+      }
+    } else {
+      executePythonCodeFallback(code);
+    }
+  }
+
+  function executePythonCodeFallback(code) {
     const lines = code.split('\n');
     let variables = {};
     let outputLines = [];
