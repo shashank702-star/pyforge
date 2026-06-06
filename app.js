@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     xp: 0,
     currentBadge: 'Novice',
     unlockedPhases: [1], // Phase 1 is unlocked initially
-    currentSelectedTopic: 'variables',
+    currentSelectedTopic: 'intro',
     quizCurrentQuestionIndex: 0,
     quizScore: 0,
     quizAnswers: [],
@@ -54,9 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const XP_LEVELS = {
     novice: 0,
-    craftsman: 100,
-    scholar: 250,
-    architect: 500
+    craftsman: 150,
+    scholar: 350,
+    architect: 600
   };
 
   function addXP(amount) {
@@ -74,26 +74,26 @@ document.addEventListener('DOMContentLoaded', () => {
     let badge = 'Novice';
     if (state.xp >= XP_LEVELS.architect) {
       badge = 'Architect';
-      state.unlockedPhases = [1, 2, 3, 4];
+      state.unlockedPhases = [1, 2, 3, 4, 5];
     } else if (state.xp >= XP_LEVELS.scholar) {
       badge = 'Scholar';
-      state.unlockedPhases = [1, 2, 3];
+      state.unlockedPhases = [1, 2, 3, 4];
     } else if (state.xp >= XP_LEVELS.craftsman) {
       badge = 'Craftsman';
-      state.unlockedPhases = [1, 2];
+      state.unlockedPhases = [1, 2, 3];
     }
     
     state.currentBadge = badge;
     badgeVal.textContent = badge;
     
     // Dynamically unlock Phase cards in UI
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 5; i++) {
       const card = document.getElementById(`phase-${i}`);
       if (card) {
         if (state.unlockedPhases.includes(i)) {
           card.classList.add('active');
           card.querySelectorAll('.roadmap-step').forEach(step => {
-            step.querySelector('.step-circle').innerHTML = i === 1 && step.dataset.topic === 'variables' ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-circle"></i>';
+            step.querySelector('.step-circle').innerHTML = i === 1 && step.dataset.topic === 'intro' ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-circle"></i>';
           });
         } else {
           card.classList.remove('active');
@@ -109,85 +109,106 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. ROADMAP LESSONS DATA
   // ==========================================
   const lessonsData = {
-    variables: {
+    intro: {
       phase: 'Phase 1 • Spark',
+      title: 'Intro & Basic Syntax',
+      desc: '<p>Python is a high-level, interpreted language designed for readability. Unlike languages that use curly braces <code>{}</code> or semicolons, Python uses <strong>whitespace indentation</strong> to define structure and scope.</p><h4>Whitespace Indentation:</h4><p>Code blocks (like loops or functions) must be indented consistently, typically using 4 spaces. A mismatch in indentation will result in an <code>IndentationError</code>.</p>',
+      code: '# Welcome to PyForge!\n# This is a comment\n\nmessage = "Hello Python Learner"\nprint(message)\n\nif 10 > 5:\n    print("Whitespace indentation defines scope blocks!")',
+      videoId: 'Y8Tko2yc5hA'
+    },
+    files: {
+      phase: 'Phase 1 • Spark',
+      title: 'Working with Files',
+      desc: '<p>File I/O (Input/Output) allows Python programs to persist data by reading and writing files. Use the built-in <code>open(filename, mode)</code> function to instantiate a file stream.</p><h4>Safe File Handles:</h4><p>Always close files after using them, or use the <code>with</code> context manager statement to guarantee resource release automatically.</p>',
+      code: '# Simulating writing and reading a file\nwith open("pyforge_temp.txt", "w") as file:\n    file.write("Python File handling is simple!")\n\nwith open("pyforge_temp.txt", "r") as file:\n    print(file.read())',
+      videoId: 'ixEeeNfyc70'
+    },
+    libraries: {
+      phase: 'Phase 1 • Spark',
+      title: 'Standard Libraries & Imports',
+      desc: '<p>Python ships with a rich set of built-in utility modules (the Standard Library). To access these modules, use the <code>import</code> statement.</p><h4>Core Modules:</h4><p>Common built-in modules include <code>math</code> for math operations, <code>random</code> for random number generations, and <code>sys</code> or <code>os</code> for system and OS properties.</p>',
+      code: 'import math\nimport random\n\nnumber = random.randint(1, 10)\nresult = math.sqrt(number)\n\nprint(f"Random Number: {number}")\nprint(f"Square Root: {result:.4f}")',
+      videoId: '6u35p5zLntc'
+    },
+    variables: {
+      phase: 'Phase 2 • Ignition',
       title: 'Variables & Reference Models',
       desc: '<p>In Python, variables are <strong>not storage boxes</strong>. They are simple <strong>labels (bindings)</strong> that point to objects on the memory heap.</p><p>When you execute <code>a = [1, 2]</code>, Python allocates the list object in the Heap space, and binds the name label <code>a</code> to it in the Stack namespace.</p><h4>Crucial Insight:</h4><p>If you set <code>b = a</code>, no copy of the list is made. Both <code>a</code> and <code>b</code> refer to the same list. Mutating one immediately affects the other.</p>',
       code: 'a = [1, 2]\nb = a\na.append(3)\nprint("a:", a)\nprint("b:", b) # b is also modified!',
       videoId: 'kqtD5dpn9C8'
     },
     structures: {
-      phase: 'Phase 1 • Spark',
+      phase: 'Phase 2 • Ignition',
       title: 'Core Data Structures',
       desc: '<p>Python features extremely versatile built-in collections: Lists (ordered, mutable), Tuples (ordered, immutable), Dictionaries (key-value hash maps), and Sets (unordered, unique values).</p><p>Understanding their mutability is key. Lists can grow/shrink, while Tuples are frozen upon creation and are frequently used to ensure data integrity.</p>',
       code: 'my_list = [10, 20]\nmy_tuple = (10, 20)\nmy_dict = {"name": "Python", "version": 3.10}\n\n# Tuples cannot be modified:\n# my_tuple[0] = 99 -> Raises TypeError!',
       videoId: 'W8KRzm-HUcc'
     },
     loops: {
-      phase: 'Phase 1 • Spark',
+      phase: 'Phase 2 • Ignition',
       title: 'Control Loops & Iterators',
       desc: '<p>Loops in Python use the Iterator Protocol under the hood. Using <code>for x in container</code> calls <code>iter(container)</code>, retrieving an iterator object, and calls <code>__next__()</code> until it raises a <code>StopIteration</code> exception.</p><h4>Range Functionality:</h4><p>The <code>range(start, stop, step)</code> function does not create a full list in memory. Instead, it generates integers on demand, making it incredibly memory efficient.</p>',
       code: 'for i in range(1, 4):\n    print(f"Forge Loop Step: {i}")',
       videoId: 'dHANJ4l6fwA'
     },
     functions: {
-      phase: 'Phase 2 • Build',
+      phase: 'Phase 3 • Build',
       title: 'Functions & Execution Scope',
       desc: '<p>Functions are <strong>first-class citizens</strong> in Python. This means they can be passed as arguments, returned from other functions, and bound to variable names.</p><p>Python searches scopes using the <strong>LEGB Rule</strong>: <strong>L</strong>ocal -> <strong>E</strong>nclosing -> <strong>G</strong>lobal -> <strong>B</strong>uilt-in. If you want to modify a variable outside the current scope, you must explicitly declare it with <code>global</code> or <code>nonlocal</code>.</p>',
       code: 'def outer_function():\n    msg = "Enclosing Scope"\n    def inner_function():\n        nonlocal msg\n        msg = "Mutated Enclosing Scope"\n    inner_function()\n    print(msg)\nouter_function()',
       videoId: 'u-OMNv_LYRA'
     },
     comprehensions: {
-      phase: 'Phase 2 • Build',
+      phase: 'Phase 3 • Build',
       title: 'Comprehension Syntaxes',
       desc: '<p>Comprehensions provide a concise way to create lists, dictionaries, or sets from iterable objects. They are faster than standard <code>for</code> loops because they are optimized in C-level bytecode.</p>',
       code: 'numbers = [1, 2, 3, 4, 5]\nsquares = [x**2 for x in numbers if x % 2 != 0]\nprint("Odd squares:", squares)',
       videoId: '3dt4OGnU5sM'
     },
     exceptions: {
-      phase: 'Phase 2 • Build',
+      phase: 'Phase 3 • Build',
       title: 'Exception Propagation',
       desc: '<p>Exceptions propagate up the call stack. If they are not caught inside a <code>try/except</code> block, the execution stops, and Python prints a traceback detailing the error chain.</p>',
       code: 'def safe_divide(x, y):\n    try:\n        return x / y\n    except ZeroDivisionError:\n        return "Error: Division by zero!"\nprint(safe_divide(10, 0))',
       videoId: '6SPDvPK38es'
     },
     classes: {
-      phase: 'Phase 3 • Architect',
+      phase: 'Phase 4 • Architect',
       title: 'Classes & Instantiation',
       desc: '<p>Object-Oriented Programming (OOP) lets you bundle behavior and data together. In Python, a class defines the blueprint, and an instance represents the physical object loaded in memory.</p><p>When an instance is created, <code>__new__</code> allocates the memory, and then <code>__init__</code> initializes the attributes.</p>',
       code: 'class Wizard:\n    def __init__(self, name):\n        self.name = name\n    def cast(self):\n        return f"{self.name} casts Fireball!"\n\nmerlin = Wizard("Merlin")\nprint(merlin.cast())',
       videoId: 'wFcDGy_G6dM'
     },
     dunders: {
-      phase: 'Phase 3 • Architect',
+      phase: 'Phase 4 • Architect',
       title: 'Dunder (Magic) Methods',
       desc: '<p>Double-underscore (dunder) methods allow you to hook your classes into standard Python operations. Implementing <code>__str__</code> alters string representation, while <code>__len__</code> implements the behavior of <code>len(obj)</code>.</p>',
       code: 'class Cart:\n    def __init__(self, items):\n        self.items = items\n    def __len__(self):\n        return len(self.items)\n\nmy_cart = Cart(["book", "pen"])\nprint("Cart item count:", len(my_cart))',
       videoId: '3ohzBxoFHAY'
     },
     inheritance: {
-      phase: 'Phase 3 • Architect',
+      phase: 'Phase 4 • Architect',
       title: 'MRO & Class Inheritance',
       desc: '<p>Python supports multiple inheritance. It uses the <strong>Method Resolution Order (MRO)</strong> computed via the C3 Linearization algorithm to determine the order in which base classes are searched for attributes.</p>',
       code: 'class A: pass\nclass B(A): pass\nprint("MRO of B:", B.__mro__)',
       videoId: 'Cn7AkDb9A70'
     },
     decorators: {
-      phase: 'Phase 4 • Scale',
+      phase: 'Phase 5 • Scale',
       title: 'Decorators & Closures',
       desc: '<p>A decorator is a function that takes another function as an argument, adds some functional extension, and returns a modified function wrapper.</p><p>This relies on **Closures** - nested functions that retain reference to variable bindings from their enclosing lexical scopes even after the outer function has completed execution.</p>',
       code: 'def bold_decorator(func):\n    def wrapper():\n        return "<b>" + func() + "</b>"\n    return wrapper\n\n@bold_decorator\ndef hello():\n    return "Hello"\nprint(hello())',
       videoId: 'FsAPt_9BdxU'
     },
     generators: {
-      phase: 'Phase 4 • Scale',
+      phase: 'Phase 5 • Scale',
       title: 'Generators & Yield Statements',
       desc: '<p>Generators compile into iterator functions containing the <code>yield</code> keyword. Unlike functions that return a value and destroy their stack space, generators freeze their state and return control, resuming right where they left off when requested.</p>',
       code: 'def fibonacci(limit):\n    a, b = 0, 1\n    for _ in range(limit):\n        yield a\n        a, b = b, a + b\n\nprint(list(fibonacci(5)))',
       videoId: 'tmeK5Gef5XA'
     },
     context: {
-      phase: 'Phase 4 • Scale',
+      phase: 'Phase 5 • Scale',
       title: 'Context Managers',
       desc: '<p>Context managers streamline resource lifecycle management (like opening files or lock acquisitions). They are triggered using the <code>with</code> block, executing <code>__enter__</code> to set up resources, and <code>__exit__</code> to guarantee cleanup even if errors occur.</p>',
       code: 'class FileMock:\n    def __enter__(self):\n        print("Opening mock file...")\n        return self\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        print("Closing file mock safely.")\n\nwith FileMock() as f:\n    print("Writing bytes...")',
@@ -199,6 +220,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. PPT PRESENTATION SLIDES DATABASE
   // ==========================================
   const slidesData = {
+    intro: [
+      { title: "Python Readability & Zen", bullets: ["Whitespace indentation defines code block boundaries.", "Semicolons are optional and generally avoided.", "Single line comments use #; triple-quotes define docstrings."] },
+      { title: "Indentation and Block Scope", bullets: ["Always use 4 spaces per indentation level.", "Never mix tabs and spaces (raises TabError).", "Blocks are introduced by colons (:) at the end of parent statements."] },
+      { title: "Dynamic Typing Variables", bullets: ["Variables are name tags bound to objects on the fly.", "You don't declare variable datatypes beforehand.", "Variables can refer to different types during execution."] }
+    ],
+    files: [
+      { title: "File Input & Output streams", bullets: ["Use open(filename, mode) to get a file object handle.", "Common access modes: 'r' (read), 'w' (write), 'a' (append).", "Always call close() to release OS locks and flush memory buffers."] },
+      { title: "Context Managers and Safety", bullets: ["The 'with' statement forms a safe execution scope.", "Automatically closes file handlers even if exceptions occur.", "Avoids common resource leaks in production script loops."] }
+    ],
+    libraries: [
+      { title: "The Python Standard Library", bullets: ["Python's 'batteries included' policy provides built-in modules.", "Import modules using: import module_name.", "Access elements using dot notation: math.sqrt(16)."] },
+      { title: "Core Modules Overview", bullets: ["math: core constants (pi) and functions (log, sin, sqrt).", "random: generate pseudo-random floats, integers, and choices.", "os & sys: query environment variables and runtime settings."] }
+    ],
     variables: [
       { title: "Variables as Namespaces Pointers", bullets: ["Variables in Python are labels, NOT boxes containing values.", "An assignment binds a namespace key to an allocated Heap reference ID.", "Passing parameters passes references, not copies of variables."] },
       { title: "Stack Frame vs Heap allocation", bullets: ["Stack isolates name labels, active parameters, and scope frame references.", "Heap contains data payloads: Integers, lists, objects, and strings.", "Variables act as 32/64-bit address labels pointing to Heap addresses."] },
@@ -459,9 +493,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. CURATED VIDEO LIBRARY CATALOG
   // ==========================================
   const videoCatalogData = [
-    { id: "kqtD5dpn9C8", phase: "spark", title: "Variables & Reference Models", desc: "A detailed breakdown of variable bindings, tags, stack bindings, and mutability.", duration: "12:15" },
-    { id: "W8KRzm-HUcc", phase: "spark", title: "Mastering Lists, Tuples & Dicts", desc: "Explore collections scoping, hash mapping, lists, sets, and tuple safety.", duration: "18:40" },
-    { id: "dHANJ4l6fwA", phase: "spark", title: "Control Flows & Loops", desc: "How python iterators trigger list loops and evaluate conditions.", duration: "14:20" },
+    { id: "Y8Tko2yc5hA", phase: "spark", title: "Intro & Basic Syntax", desc: "Understand whitespace indentation, comments, printing, and code structure.", duration: "10:30" },
+    { id: "ixEeeNfyc70", phase: "spark", title: "Python File Handling I/O", desc: "Learn to read/write text files, append content, and use context managers.", duration: "14:15" },
+    { id: "6u35p5zLntc", phase: "spark", title: "Standard Libraries & Imports", desc: "How to use math, random, sys, and os libraries to enhance functionality.", duration: "12:50" },
+    { id: "kqtD5dpn9C8", phase: "ignition", title: "Variables & Reference Models", desc: "A detailed breakdown of variable bindings, tags, stack bindings, and mutability.", duration: "12:15" },
+    { id: "W8KRzm-HUcc", phase: "ignition", title: "Mastering Lists, Tuples & Dicts", desc: "Explore collections scoping, hash mapping, lists, sets, and tuple safety.", duration: "18:40" },
+    { id: "dHANJ4l6fwA", phase: "ignition", title: "Control Flows & Loops", desc: "How python iterators trigger list loops and evaluate conditions.", duration: "14:20" },
     { id: "u-OMNv_LYRA", phase: "build", title: "Function Scoping & LEGB Rules", desc: "A clean walkthrough of enclosing ranges, namespace priorities, and nonlocals.", duration: "16:05" },
     { id: "3dt4OGnU5sM", phase: "build", title: "List Comprehensions Optimization", desc: "Making your codes faster using inline collections declaration and filtering.", duration: "11:55" },
     { id: "wFcDGy_G6dM", phase: "architect", title: "Classes & Instance Heap Space", desc: "Learn class constructor properties, attribute lookups, and heap layout.", duration: "25:30" },
@@ -525,6 +562,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. THE INTERACTIVE PLAYGROUND (MOCK PARSER)
   // ==========================================
   const templates = {
+    intro: `# Basic Python syntax\nname = "PyForge Learner"\nprint(f"Hello, {name}!")\n\nif 10 > 5:\n    print("Indentations define blocks!")`,
+    files: `# File operations simulated\nwith open("sandbox.txt", "w") as f:\n    f.write("Created in the PyForge WASM Sandbox!")\n\nwith open("sandbox.txt", "r") as f:\n    print(f.read())`,
+    libraries: `import math\nimport random\n\nval = random.randint(10, 100)\nprint(f"Random number is: {val}")\nprint(f"Its square root is: {math.sqrt(val):.2f}")`,
     vars: `x = 42\ny = x\nx = 99\n\nprint("x is:", x)\nprint("y is:", y)`,
     comprehension: `nums = [1, 2, 3, 4, 5]\nevens_squared = [x**2 for x in nums if x % 2 == 0]\n\nprint("Evens squared list:", evens_squared)`,
     'class-oop': `class ForgeMember:\n    def __init__(self, name, xp):\n        self.name = name\n        self.xp = xp\n    def get_info(self):\n        return f"Member {self.name} has {self.xp} XP!"\n\nmember = ForgeMember("Archimedes", 250)\nprint(member.get_info())`,
@@ -1114,6 +1154,39 @@ sys.stderr = io.StringIO()
   // 10. THE FORGE ASSESSMENT (QUIZ)
   // ==========================================
   const quizQuestions = [
+    {
+      question: "Which of the following is true about code blocks in Python?",
+      options: [
+        "They are enclosed in curly braces { }",
+        "They are defined by consistent whitespace indentation",
+        "They are terminated with a semicolon ;",
+        "They require BEGIN and END keywords"
+      ],
+      correct: 1,
+      explanation: "Unlike many other languages, Python uses consistent whitespace indentation (typically 4 spaces) to define block boundaries and structure."
+    },
+    {
+      question: "What is the primary benefit of using a 'with' statement when opening a file in Python?",
+      options: [
+        "It automatically compiles the file to bytecode",
+        "It speeds up file read operations by caching in RAM",
+        "It guarantees the file handle is safely closed even if errors occur",
+        "It encrypts the file automatically for security"
+      ],
+      correct: 2,
+      explanation: "The 'with' statement implements the context manager protocol, ensuring files are closed automatically and reliably when exiting the block."
+    },
+    {
+      question: "Which import statement is generally discouraged in production code due to potential naming conflicts?",
+      options: [
+        "import math",
+        "from math import sqrt, pi",
+        "import random as rnd",
+        "from math import *"
+      ],
+      correct: 3,
+      explanation: "Wildcard imports (e.g. 'from math import *') pull all symbols into the current namespace, which can cause variable name shadowing and conflicts."
+    },
     {
       question: "What is the stdout value of the following Python block?\n\na = [1, 2]\nb = a\na.append(3)\nprint(b)",
       options: [

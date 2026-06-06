@@ -126,20 +126,20 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
         <!-- Phase 1 Card -->
         <div class="phase-card active" id="phase-1">
           <div class="phase-badge">Phase 1</div>
-          <h3 class="phase-name"><i class="fa-solid fa-seedling text-cyan"></i> Spark (Fundamentals)</h3>
-          <p class="phase-description">Variables, data structures, control flows, and conditional logic. Build your foundational confidence.</p>
+          <h3 class="phase-name"><i class="fa-solid fa-seedling text-cyan"></i> Spark (Basics & Environment)</h3>
+          <p class="phase-description">Introduction to syntax, formatting, running files, and standard Python libraries.</p>
           <div class="roadmap-steps">
-            <div class="roadmap-step" data-topic="variables">
+            <div class="roadmap-step" data-topic="intro">
               <span class="step-circle"><i class="fa-solid fa-check"></i></span>
-              <span class="step-title">Variables & References</span>
+              <span class="step-title">Intro & Basic Syntax</span>
             </div>
-            <div class="roadmap-step" data-topic="structures">
+            <div class="roadmap-step" data-topic="files">
               <span class="step-circle"><i class="fa-solid fa-circle"></i></span>
-              <span class="step-title">Python Data Structures</span>
+              <span class="step-title">Working with Files</span>
             </div>
-            <div class="roadmap-step" data-topic="loops">
+            <div class="roadmap-step" data-topic="libraries">
               <span class="step-circle"><i class="fa-solid fa-circle"></i></span>
-              <span class="step-title">Control Loops & Ranges</span>
+              <span class="step-title">Standard Libraries</span>
             </div>
           </div>
         </div>
@@ -147,7 +147,28 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
         <!-- Phase 2 Card -->
         <div class="phase-card" id="phase-2">
           <div class="phase-badge">Phase 2</div>
-          <h3 class="phase-name"><i class="fa-solid fa-cubes text-gold"></i> Build (Functions & Logic)</h3>
+          <h3 class="phase-name"><i class="fa-solid fa-fire text-gold"></i> Ignition (Fundamentals)</h3>
+          <p class="phase-description">Variables, data structures, control flows, and conditional logic. Build your foundational confidence.</p>
+          <div class="roadmap-steps">
+            <div class="roadmap-step" data-topic="variables">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Variables & References</span>
+            </div>
+            <div class="roadmap-step" data-topic="structures">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Python Data Structures</span>
+            </div>
+            <div class="roadmap-step" data-topic="loops">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Control Loops & Ranges</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 Card -->
+        <div class="phase-card" id="phase-3">
+          <div class="phase-badge">Phase 3</div>
+          <h3 class="phase-name"><i class="fa-solid fa-cubes text-pink"></i> Build (Functions & Logic)</h3>
           <p class="phase-description">Writing modular, clean, and reusable functions. Deep dive into collections and error handling.</p>
           <div class="roadmap-steps">
             <div class="roadmap-step" data-topic="functions">
@@ -165,10 +186,10 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
           </div>
         </div>
 
-        <!-- Phase 3 Card -->
-        <div class="phase-card" id="phase-3">
-          <div class="phase-badge">Phase 3</div>
-          <h3 class="phase-name"><i class="fa-solid fa-project-diagram text-pink"></i> Architect (OOP)</h3>
+        <!-- Phase 4 Card -->
+        <div class="phase-card" id="phase-4">
+          <div class="phase-badge">Phase 4</div>
+          <h3 class="phase-name"><i class="fa-solid fa-project-diagram text-mint"></i> Architect (OOP)</h3>
           <p class="phase-description">Object-oriented programming paradigm. Classes, inheritance, encapsulation, and pythonic dunder methods.</p>
           <div class="roadmap-steps">
             <div class="roadmap-step" data-topic="classes">
@@ -186,10 +207,10 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
           </div>
         </div>
 
-        <!-- Phase 4 Card -->
-        <div class="phase-card" id="phase-4">
-          <div class="phase-badge">Phase 4</div>
-          <h3 class="phase-name"><i class="fa-solid fa-bolt-lightning text-mint"></i> Scale (Metaprogramming)</h3>
+        <!-- Phase 5 Card -->
+        <div class="phase-card" id="phase-5">
+          <div class="phase-badge">Phase 5</div>
+          <h3 class="phase-name"><i class="fa-solid fa-bolt-lightning text-cyan"></i> Scale (Metaprogramming)</h3>
           <p class="phase-description">Advanced Python mechanisms. Decorators, generators, context managers, and high-performance concepts.</p>
           <div class="roadmap-steps">
             <div class="roadmap-step" data-topic="decorators">
@@ -296,9 +317,10 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
       <div class="video-filters">
         <button class="video-filter-btn active" data-filter="all">All Playlists</button>
         <button class="video-filter-btn" data-filter="spark">Phase 1: Spark</button>
-        <button class="video-filter-btn" data-filter="build">Phase 2: Build</button>
-        <button class="video-filter-btn" data-filter="architect">Phase 3: OOP</button>
-        <button class="video-filter-btn" data-filter="scale">Phase 4: Scale</button>
+        <button class="video-filter-btn" data-filter="ignition">Phase 2: Ignition</button>
+        <button class="video-filter-btn" data-filter="build">Phase 3: Build</button>
+        <button class="video-filter-btn" data-filter="architect">Phase 4: OOP</button>
+        <button class="video-filter-btn" data-filter="scale">Phase 5: Scale</button>
       </div>
 
       <!-- Video Grid -->
@@ -324,6 +346,9 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
               <label for="scenario-select"><i class="fa-solid fa-code"></i> Template:</label>
               <select id="scenario-select">
                 <option value="custom">-- Write Custom Code --</option>
+                <option value="intro">Python Basics & Indentation</option>
+                <option value="files">File Read/Write Simulator</option>
+                <option value="libraries">Imports & Math/Random</option>
                 <option value="vars">Variables & Re-assignment</option>
                 <option value="comprehension">List Comprehensions</option>
                 <option value="class-oop">Custom Class & Instance</option>
