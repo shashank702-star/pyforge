@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PyForge | Interactive Python Learning Journey</title>
+  <meta name="description" content="Master Python programming interactively from variables to custom decorators. Visually explore Python's memory model, code execution, and key OOP concepts.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- FontAwesome Icons (Via CDN for premium iconography) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Background Glowing Orbs for Premium Ambient Design -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM11.15 15.35H9.65V12.15C9.65 11.55 9.15 11.05 8.55 11.05H5.85V9.55H8.55C10 9.55 11.15 10.7 11.15 12.15V15.35ZM18.15 14.45H15.45C14 14.45 12.85 13.3 12.85 11.85V8.65H14.35V11.85C14.35 12.45 14.85 12.95 15.45 12.95H18.15V14.45Z" fill="url(#python-gradient)" />
+            <defs>
+              <linearGradient id="python-gradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#fbbf24" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">Py<span class="highlight">Forge</span></span>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#roadmap" class="nav-link"><i class="fa-solid fa-map-location-dot"></i> Roadmap</a>
+        <a href="#videos" class="nav-link"><i class="fa-solid fa-video"></i> Videos</a>
+        <a href="#playground" class="nav-link"><i class="fa-solid fa-terminal"></i> Playground</a>
+        <a href="#visualizer" class="nav-link"><i class="fa-solid fa-brain"></i> Visualizer</a>
+        <a href="#quiz" class="nav-link"><i class="fa-solid fa-award"></i> The Forge Quiz</a>
+        <a href="#free-access" class="nav-link"><i class="fa-solid fa-hand-holding-heart"></i> Free Access</a>
+      </nav>
+
+      <div class="user-stats" id="user-stats">
+        <div class="stat-badge">
+          <i class="fa-solid fa-bolt text-gold"></i>
+          <span class="stat-val" id="xp-display">0 XP</span>
+        </div>
+        <div class="stat-badge">
+          <i class="fa-solid fa-award text-cyan"></i>
+          <span class="stat-val" id="badge-display">Novice</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="hero-text-content">
+        <div class="hero-tagline">
+          <span class="tag-accent"><i class="fa-brands fa-python"></i> 100% Free to Learn</span>
+          <span class="tag-status">Interactive Sandbox</span>
+        </div>
+        <h1 class="hero-title">Forge Your Python Mastery from <span class="text-gradient">First Principles</span></h1>
+        <p class="hero-description">
+          Forget passive video tutorials and costly paywalls. Dive into an immersive free interface where you visualize memory referencing, execute code in real-time, read PowerPoint study slides, and watch curated visual video explainers on key modules.
+        </p>
+        <div class="hero-ctas">
+          <a href="#roadmap" class="btn btn-primary"><i class="fa-solid fa-play"></i> Start Forging</a>
+          <a href="#videos" class="btn btn-secondary"><i class="fa-solid fa-video"></i> Video Library</a>
+        </div>
+      </div>
+
+      <!-- Animated Code Block Widget in Hero -->
+      <div class="hero-code-widget">
+        <div class="widget-header">
+          <div class="widget-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <span class="widget-title"><i class="fa-brands fa-python"></i> recursion_depth.py</span>
+        </div>
+        <div class="widget-body">
+          <pre class="code-editor-mock"><code class="fira-code"><span class="keyword">def</span> <span class="function">factorial</span>(n):
+    <span class="comment"># Tracing recursion path</span>
+    <span class="keyword">if</span> n <= <span class="number">1</span>:
+        <span class="keyword">return</span> <span class="number">1</span>
+    <span class="keyword">return</span> n * <span class="function">factorial</span>(n - <span class="number">1</span>)
+
+<span class="comment"># Output tracking</span>
+print(factorial(<span class="number">5</span>))  <span class="comment"># Output: 120</span></code></pre>
+          <div class="widget-terminal">
+            <div class="terminal-prompt">&gt;&gt;&gt; Running recursion_depth.py...</div>
+            <div class="terminal-line"><span class="term-dim">[Step 1]</span> call: factorial(5)</div>
+            <div class="terminal-line"><span class="term-dim">[Step 2]</span> call: factorial(4)</div>
+            <div class="terminal-line"><span class="term-dim">[Step 3]</span> call: factorial(3)</div>
+            <div class="terminal-line"><span class="term-dim">[Step 4]</span> call: factorial(2)</div>
+            <div class="terminal-line"><span class="term-dim">[Step 5]</span> call: factorial(1) -> returns 1</div>
+            <div class="terminal-line text-mint"><span class="term-bold">Success:</span> Returned value: 120</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Roadmap / Learning Path Section -->
+    <section class="roadmap-section" id="roadmap">
+      <div class="section-header">
+        <span class="section-pre">Learning Roadmap</span>
+        <h2 class="section-title">The Path of the Python Architect</h2>
+        <p class="section-desc">Progress through four comprehensive phases. Click a node to inspect lessons, syntax highlights, and coding challenges.</p>
+      </div>
+
+      <div class="roadmap-grid">
+        <!-- Phase 1 Card -->
+        <div class="phase-card active" id="phase-1">
+          <div class="phase-badge">Phase 1</div>
+          <h3 class="phase-name"><i class="fa-solid fa-seedling text-cyan"></i> Spark (Fundamentals)</h3>
+          <p class="phase-description">Variables, data structures, control flows, and conditional logic. Build your foundational confidence.</p>
+          <div class="roadmap-steps">
+            <div class="roadmap-step" data-topic="variables">
+              <span class="step-circle"><i class="fa-solid fa-check"></i></span>
+              <span class="step-title">Variables & References</span>
+            </div>
+            <div class="roadmap-step" data-topic="structures">
+              <span class="step-circle"><i class="fa-solid fa-circle"></i></span>
+              <span class="step-title">Python Data Structures</span>
+            </div>
+            <div class="roadmap-step" data-topic="loops">
+              <span class="step-circle"><i class="fa-solid fa-circle"></i></span>
+              <span class="step-title">Control Loops & Ranges</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 Card -->
+        <div class="phase-card" id="phase-2">
+          <div class="phase-badge">Phase 2</div>
+          <h3 class="phase-name"><i class="fa-solid fa-cubes text-gold"></i> Build (Functions & Logic)</h3>
+          <p class="phase-description">Writing modular, clean, and reusable functions. Deep dive into collections and error handling.</p>
+          <div class="roadmap-steps">
+            <div class="roadmap-step" data-topic="functions">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Functions & Scoping</span>
+            </div>
+            <div class="roadmap-step" data-topic="comprehensions">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">List & Dict Comprehensions</span>
+            </div>
+            <div class="roadmap-step" data-topic="exceptions">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Exception Propagation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 Card -->
+        <div class="phase-card" id="phase-3">
+          <div class="phase-badge">Phase 3</div>
+          <h3 class="phase-name"><i class="fa-solid fa-project-diagram text-pink"></i> Architect (OOP)</h3>
+          <p class="phase-description">Object-oriented programming paradigm. Classes, inheritance, encapsulation, and pythonic dunder methods.</p>
+          <div class="roadmap-steps">
+            <div class="roadmap-step" data-topic="classes">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Classes & Instantiation</span>
+            </div>
+            <div class="roadmap-step" data-topic="dunders">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Dunder (Magic) Methods</span>
+            </div>
+            <div class="roadmap-step" data-topic="inheritance">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">MRO & Inheritance</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 Card -->
+        <div class="phase-card" id="phase-4">
+          <div class="phase-badge">Phase 4</div>
+          <h3 class="phase-name"><i class="fa-solid fa-bolt-lightning text-mint"></i> Scale (Metaprogramming)</h3>
+          <p class="phase-description">Advanced Python mechanisms. Decorators, generators, context managers, and high-performance concepts.</p>
+          <div class="roadmap-steps">
+            <div class="roadmap-step" data-topic="decorators">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Decorators & Closures</span>
+            </div>
+            <div class="roadmap-step" data-topic="generators">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Generators & Yield</span>
+            </div>
+            <div class="roadmap-step" data-topic="context">
+              <span class="step-circle"><i class="fa-solid fa-lock"></i></span>
+              <span class="step-title">Context Managers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Lesson Card (Toggled dynamic content based on selected step) -->
+      <div class="lesson-panel" id="lesson-panel">
+        <div class="lesson-header">
+          <div class="lesson-title-area">
+            <span class="lesson-phase-indicator" id="lesson-phase-indicator">PHASE 1</span>
+            <h3 class="lesson-title" id="lesson-title">Variables & Reference Models</h3>
+          </div>
+          <div class="lesson-header-controls">
+            <!-- Save/Download Button Cluster -->
+            <div class="lesson-actions-cluster">
+              <button class="action-btn-mini" id="print-notes-btn" title="Save notes as PDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+              <a class="action-btn-mini" id="download-notes-btn" title="Download Markdown Study Notes" download><i class="fa-solid fa-download"></i> Notes</a>
+            </div>
+            <button class="close-lesson" id="close-lesson-btn"><i class="fa-solid fa-times"></i></button>
+          </div>
+        </div>
+
+        <!-- Tutorial Hub Navigation Tabs -->
+        <div class="tutorial-tabs">
+          <button class="tab-btn active" id="tab-btn-read"><i class="fa-solid fa-book-open"></i> Detailed Tutorial</button>
+          <button class="tab-btn" id="tab-btn-slides"><i class="fa-solid fa-person-chalkboard"></i> PPT Slide Deck</button>
+          <button class="tab-btn" id="tab-btn-video"><i class="fa-solid fa-video"></i> Video Explainer</button>
+        </div>
+
+        <div class="lesson-content-grid">
+          <!-- Text Tab Content -->
+          <div class="tab-panel-content active" id="tab-content-read">
+            <div class="lesson-text" id="lesson-text">
+              <!-- Text injected via JS -->
+            </div>
+          </div>
+
+          <!-- Slides Tab Content -->
+          <div class="tab-panel-content hidden" id="tab-content-slides">
+            <div class="slides-viewer-card">
+              <div class="slide-viewer-header">
+                <span class="slide-tag"><i class="fa-brands fa-python"></i> PyForge Slides</span>
+                <span class="slide-indicator" id="slide-indicator">Slide 1 of 4</span>
+              </div>
+              <div class="slide-viewer-body">
+                <h4 class="slide-title" id="slide-title">1. Variables as Label Bindings</h4>
+                <ul class="slide-bullets" id="slide-bullets">
+                  <!-- Bullets injected via JS -->
+                </ul>
+              </div>
+              <div class="slide-viewer-footer">
+                <button class="btn btn-secondary btn-sm" id="slide-prev-btn"><i class="fa-solid fa-chevron-left"></i> Previous</button>
+                <div class="slide-progress-container">
+                  <div class="slide-progress-fill" id="slide-progress-fill"></div>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="slide-next-btn">Next <i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Tab Content -->
+          <div class="tab-panel-content hidden" id="tab-content-video">
+            <div class="video-container-wrapper">
+              <iframe id="tutorial-video-iframe" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <p class="video-helper-text"><i class="fa-solid fa-circle-info text-cyan"></i> Curated free video explaining the mechanisms of this topic. Run the code on the right side concurrently!</p>
+          </div>
+
+          <!-- Snippet Panel -->
+          <div class="lesson-snippet-card">
+            <div class="snippet-header">
+              <span>Interactive Code Sample</span>
+              <button class="copy-snippet" id="copy-snippet-btn"><i class="fa-regular fa-copy"></i> Copy</button>
+            </div>
+            <pre class="snippet-code"><code id="lesson-code-content" class="fira-code"></code></pre>
+            <button class="btn btn-accent btn-sm" id="load-to-playground-btn"><i class="fa-solid fa-terminal"></i> Load into Playground</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Video Library / Catalog Section -->
+    <section class="video-library-section" id="videos">
+      <div class="section-header">
+        <span class="section-pre">Curated Playlists</span>
+        <h2 class="section-title">Video Tutorial Catalog</h2>
+        <p class="section-desc">Access high-quality Python guides and crash courses completely free. Filter classes by topic.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="video-filters">
+        <button class="video-filter-btn active" data-filter="all">All Playlists</button>
+        <button class="video-filter-btn" data-filter="spark">Phase 1: Spark</button>
+        <button class="video-filter-btn" data-filter="build">Phase 2: Build</button>
+        <button class="video-filter-btn" data-filter="architect">Phase 3: OOP</button>
+        <button class="video-filter-btn" data-filter="scale">Phase 4: Scale</button>
+      </div>
+
+      <!-- Video Grid -->
+      <div class="video-grid" id="video-grid">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- Code Playground Section -->
+    <section class="playground-section" id="playground">
+      <div class="section-header">
+        <span class="section-pre">Live Code Editor</span>
+        <h2 class="section-title">The Interactive Python Forge</h2>
+        <p class="section-desc">Edit code, execute it instantly, and track outputs. Choose a template or write your own script.</p>
+      </div>
+
+      <!-- Playground Interface -->
+      <div class="playground-container">
+        <!-- Editor Pane -->
+        <div class="editor-pane">
+          <div class="pane-header">
+            <div class="scenario-selector-container">
+              <label for="scenario-select"><i class="fa-solid fa-code"></i> Template:</label>
+              <select id="scenario-select">
+                <option value="custom">-- Write Custom Code --</option>
+                <option value="vars">Variables & Re-assignment</option>
+                <option value="comprehension">List Comprehensions</option>
+                <option value="class-oop">Custom Class & Instance</option>
+                <option value="decorator-timer">Custom Timing Decorator</option>
+              </select>
+            </div>
+            <div class="editor-controls">
+              <button class="btn btn-mint btn-sm" id="run-code-btn"><i class="fa-solid fa-play"></i> Run Code</button>
+              <button class="btn btn-secondary btn-sm" id="reset-code-btn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            </div>
+          </div>
+          <div class="editor-workspace">
+            <div class="line-numbers" id="line-numbers">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
+            <textarea class="code-textarea fira-code" id="code-textarea" spellcheck="false" autocomplete="off"># Type your Python code here
+name = "PyForge"
+version = 3.10
+print(f"Welcome to {name} v{version}!")
+
+items = [1, 2, 3]
+squared = [x**2 for x in items]
+print(f"Squared items: {squared}")
+</textarea>
+          </div>
+        </div>
+
+        <!-- Terminal Console Pane -->
+        <div class="terminal-pane">
+          <div class="pane-header">
+            <span><i class="fa-solid fa-terminal"></i> Interactive Console</span>
+            <button class="clear-terminal" id="clear-terminal-btn"><i class="fa-solid fa-trash-can"></i> Clear</button>
+          </div>
+          <div class="terminal-body" id="terminal-body">
+            <div class="terminal-output-line output-system">&gt;&gt;&gt; Ready to execute scripts. Click 'Run Code' above.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reference / Memory Visualizer Section -->
+    <section class="visualizer-section" id="visualizer">
+      <div class="section-header">
+        <span class="section-pre">Execution Inspector</span>
+        <h2 class="section-title">Visual Memory Reference Inspector</h2>
+        <p class="section-desc">See exactly how Python allocates variables, lists, and functions in computer memory. Step through operations dynamically.</p>
+      </div>
+
+      <div class="visualizer-container">
+        <!-- Left Code Control Pane -->
+        <div class="visualizer-left">
+          <div class="visualizer-scenarios">
+            <button class="vis-scen-btn active" data-scenario="vis-vars">Variable Reference Binding</button>
+            <button class="vis-scen-btn" data-scenario="vis-mut">List Mutation Shared Ref</button>
+            <button class="vis-scen-btn" data-scenario="vis-funcs">Scope Call Stack</button>
+          </div>
+
+          <div class="vis-code-display">
+            <div class="vis-code-header">
+              <span>Traced Execution</span>
+              <span id="vis-step-counter">Step 1 of 3</span>
+            </div>
+            <div class="vis-code-body" id="vis-code-body">
+              <!-- Content injected via JS -->
+            </div>
+          </div>
+
+          <div class="vis-controls">
+            <button class="btn btn-secondary" id="vis-prev-btn" disabled><i class="fa-solid fa-arrow-left"></i> Previous</button>
+            <button class="btn btn-primary" id="vis-next-btn">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- Right Visual Canvas Pane -->
+        <div class="visualizer-right">
+          <div class="canvas-header">
+            <span><i class="fa-solid fa-cubes-stacked"></i> Python Memory Sandbox</span>
+            <span class="canvas-legend">
+              <span class="legend-item"><span class="legend-box stack"></span> Stack (Names)</span>
+              <span class="legend-item"><span class="legend-box heap"></span> Heap (Objects)</span>
+            </span>
+          </div>
+          <div class="canvas-body" id="canvas-body">
+            <!-- Dynamic Interactive Memory Graph Rendering -->
+            <div class="memory-grid">
+              <div class="memory-column">
+                <h4>Names (Stack Reference)</h4>
+                <div class="ref-nodes" id="stack-nodes">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+              <div class="memory-column">
+                <h4>Objects (Heap Space)</h4>
+                <div class="object-nodes" id="heap-nodes">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Forge Quiz Section -->
+    <section class="quiz-section" id="quiz">
+      <div class="section-header">
+        <span class="section-pre">Knowledge Check</span>
+        <h2 class="section-title">The Forge Assessment</h2>
+        <p class="section-desc">Test your understanding of Python concepts. Get explanations instantly, increase your score, and claim badges!</p>
+      </div>
+
+      <div class="quiz-container">
+        <!-- Quiz Main Card -->
+        <div class="quiz-card" id="quiz-card">
+          <div class="quiz-card-header">
+            <span class="quiz-badge" id="quiz-counter">Question 1 of 5</span>
+            <span class="quiz-xp">+50 XP</span>
+          </div>
+          <div class="quiz-question-body">
+            <h3 class="quiz-question" id="quiz-question-text">Loading question...</h3>
+            <div class="quiz-options" id="quiz-options-container">
+              <!-- Options injected via JS -->
+            </div>
+          </div>
+          <div class="quiz-explanation-panel hidden" id="quiz-explanation-panel">
+            <div class="explanation-title" id="explanation-title">
+              <i class="fa-solid fa-circle-check text-mint"></i> Correct Answer!
+            </div>
+            <p class="explanation-text" id="explanation-text-content">
+              Explanation goes here...
+            </p>
+            <button class="btn btn-primary btn-sm" id="quiz-next-question-btn">Continue</button>
+          </div>
+        </div>
+
+        <!-- Quiz Completion Screen (Initially Hidden) -->
+        <div class="quiz-result-card hidden" id="quiz-result-card">
+          <div class="result-icon-container">
+            <div class="glow-ring"></div>
+            <i class="fa-solid fa-crown result-crown"></i>
+          </div>
+          <h3>Forge Training Complete!</h3>
+          <p class="result-score-text">You scored <strong id="result-score-value">0/5</strong> correct answers!</p>
+          <div class="result-xp-awarded"><i class="fa-solid fa-bolt text-gold"></i> +<span id="result-xp-value">0</span> XP Gained</div>
+          <div class="unlocked-badge-card" id="unlocked-badge-card">
+            <i class="fa-solid fa-award badge-icon-large text-cyan"></i>
+            <div>
+              <h4 id="new-badge-title">Python Core Novice</h4>
+              <p>Mastered variables, data structures, and fundamental references.</p>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="restart-quiz-btn"><i class="fa-solid fa-rotate-left"></i> Restart Assessment</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Free to Learn Trust Section -->
+    <section class="free-section" id="free-access">
+      <div class="section-header">
+        <span class="section-pre">Open Access Mission</span>
+        <h2 class="section-title">Zero Fees. Zero Registration. 100% Free.</h2>
+        <p class="section-desc">PyForge is committed to accessible, high-caliber programming education. No subscription trials, no paywalls, no premium fees.</p>
+      </div>
+
+      <div class="free-container">
+        <!-- Interactive Plan Grid -->
+        <div class="pricing-card">
+          <div class="pricing-glow-edge"></div>
+          <div class="pricing-header">
+            <span class="pricing-badge"><i class="fa-solid fa-users"></i> Community Learner</span>
+            <div class="price-value">$0 <span class="price-period">/ forever</span></div>
+            <p class="pricing-subtext">Complete, unrestricted access to the entire interactive curriculum.</p>
+          </div>
+          <ul class="pricing-features">
+            <li><i class="fa-solid fa-circle-check text-mint"></i> 12 Comprehensive Learning Modules</li>
+            <li><i class="fa-solid fa-circle-check text-mint"></i> Interactive Code Sandbox & Interpreter</li>
+            <li><i class="fa-solid fa-circle-check text-mint"></i> Dynamic Memory Stack Visualizer</li>
+            <li><i class="fa-solid fa-circle-check text-mint"></i> Curated Video Explainer Catalog</li>
+            <li><i class="fa-solid fa-circle-check text-mint"></i> Skill Badges & XP Level Tracking</li>
+            <li><i class="fa-solid fa-circle-check text-mint"></i> Zero Ad-banners or User Trackers</li>
+          </ul>
+          <a href="#roadmap" class="btn btn-primary pricing-cta"><i class="fa-solid fa-rocket"></i> Begin Free Sandbox</a>
+        </div>
+
+        <!-- Trust Information Card -->
+        <div class="trust-card">
+          <h3>Why is PyForge Free?</h3>
+          <p>
+            We believe that technical education should be democratic. High-end learning platforms shouldn't cost standard learners hundreds of dollars. PyForge is developed as a community contribution to the global developer collective.
+          </p>
+          <p>
+            You don't need to log in, register an email, or enter credit card information. Click compile, read lessons, trace memory, and learn python safely.
+          </p>
+          <div class="trust-stats">
+            <div class="trust-stat">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Free & Open Source</span>
+            </div>
+            <div class="trust-stat">
+              <span class="stat-number">Zero</span>
+              <span class="stat-label">Data Collection</span>
+            </div>
+            <div class="trust-stat">
+              <span class="stat-number">Unlimited</span>
+              <span class="stat-label">Console Runs</span>
+            </div>
+          </div>
+          <div class="trust-badges">
+            <span class="badge-tag"><i class="fa-brands fa-github text-gold"></i> Open Source Repository</span>
+            <span class="badge-tag"><i class="fa-solid fa-shield-halved text-cyan"></i> Privacy Secured</span>
+            <span class="badge-tag"><i class="fa-solid fa-heart text-pink"></i> Funded by Advocates</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="logo">
+          <span class="logo-text">Py<span class="highlight">Forge</span></span>
+        </div>
+        <p>Master Python internals, references, and patterns interactively. Free of charge.</p>
+      </div>
+      <div class="footer-right">
+        <div class="footer-links">
+          <h4>Resources</h4>
+          <a href="https://docs.python.org/3/" target="_blank"><i class="fa-solid fa-book"></i> Python Documentation</a>
+          <a href="https://peps.python.org/" target="_blank"><i class="fa-solid fa-file-code"></i> Python PEPs</a>
+        </div>
+        <div class="footer-social">
+          <h4>Platform Core</h4>
+          <p>Created with vanilla HTML5, CSS3, & JS.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 PyForge Learning Inc. Elevating code craftsmanship.</p>
+    </div>
+  </footer>
+
+  <!-- Script tags -->
+  <script src="app.js"></script>
+</body>
+</html>
