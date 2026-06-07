@@ -1369,5 +1369,67 @@ sys.stderr = io.StringIO()
   window.addEventListener('scroll', activeMenuHighlight);
   activeMenuHighlight(); // Run once to highlight initial viewport
 
+  // ==========================================
+  // 12. PYTHON RELEASE & DOCUMENTATION AUTO-SYNC
+  // ==========================================
+  async function runAutoSync() {
+    const syncStatusText = document.getElementById('sync-status-text');
+    const footerDocsLink = document.getElementById('footer-docs-link');
+
+    try {
+      // 1. Fetch latest Python release cycle details from endoflife.date
+      const response = await fetch('https://endoflife.date/api/python.json');
+      if (!response.ok) throw new Error('API fetch failed');
+      const data = await response.json();
+      
+      const latestCycle = data[0]; // e.g. { cycle: "3.12", latest: "3.12.3", ... }
+      if (latestCycle && latestCycle.latest) {
+        const pyVer = latestCycle.latest;
+        const pyCycle = latestCycle.cycle;
+
+        // Update footer documentation link dynamically
+        if (footerDocsLink) {
+          footerDocsLink.href = `https://docs.python.org/${pyCycle}/`;
+          footerDocsLink.innerHTML = `<i class="fa-solid fa-book"></i> Python ${pyCycle} Documentation`;
+        }
+
+        // Update sync status text in footer
+        if (syncStatusText) {
+          syncStatusText.innerHTML = `<i class="fa-solid fa-circle-check text-mint"></i> Synced with Python v${pyVer}`;
+        }
+        
+        console.log(`[Auto-Sync] Python version data resolved: v${pyVer} (Cycle: ${pyCycle})`);
+      }
+    } catch (err) {
+      console.warn('[Auto-Sync] Failed to fetch Python release data: ', err);
+      if (syncStatusText) {
+        syncStatusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-gold"></i> Offline (using Python 3.11 docs)`;
+      }
+    }
+
+    try {
+      // 2. Fetch latest stable Pyodide release from jsDelivr API
+      const pyodideRes = await fetch('https://data.jsdelivr.net/v1/packages/npm/pyodide');
+      if (!pyodideRes.ok) throw new Error('Pyodide package check failed');
+      const pyodideData = await pyodideRes.json();
+      
+      const latestPyodideVer = pyodideData.tags && pyodideData.tags.latest;
+      if (latestPyodideVer) {
+        console.log(`[Auto-Sync] Latest available Pyodide Core release: v${latestPyodideVer}`);
+        
+        // If current script matches v0.25.0 but there's a newer one, let's log it or print a status in console
+        const currentPyodideVersion = '0.25.0';
+        if (latestPyodideVer !== currentPyodideVersion) {
+          logTerminal(`>>> System Update: Python WASM Core v${latestPyodideVer} is available (Current: v${currentPyodideVersion}).`, 'system');
+        }
+      }
+    } catch (err) {
+      console.warn('[Auto-Sync] Failed to check Pyodide package version: ', err);
+    }
+  }
+
+  // Trigger auto sync on startup
+  runAutoSync();
+
 });
 
