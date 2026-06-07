@@ -1546,6 +1546,117 @@ for month in sorted_months:
 import json
 print(f"[[ {json.dumps(chart_data)} ]]")`,
 
+    'data-outliers': `# Scenario 4: Statistical Outlier Detection (2.0x Std Dev)
+# We calculate mean and standard deviation from first principles
+
+# 1. Extract all revenues
+revenues = [row["revenue"] for row in sales_data]
+n = len(revenues)
+
+# 2. Compute Mean (Average)
+mean = sum(revenues) / n
+
+# 3. Compute Variance & Standard Deviation
+variance = sum((x - mean) ** 2 for x in revenues) / n
+std_dev = variance ** 0.5
+
+print(f"--- Dataset Statistics ---")
+print(f"Mean Revenue: ${mean:,.2f}")
+print(f"Std Deviation: ${std_dev:,.2f}")
+print("--------------------------")
+
+# 4. Identify Outliers (> 2.0 Std Dev from Mean)
+threshold = 2.0
+plot_data = []
+
+print("--- Outlier Detection Log ---")
+for row in sales_data:
+    month = row["month"]
+    region = row["region"]
+    rev = row["revenue"]
+    
+    distance = abs(rev - mean)
+    is_outlier = distance > (threshold * std_dev)
+    
+    status = "OUTLIER" if is_outlier else "NORMAL"
+    print(f"{month} ({region}): ${rev:,} | Dist: ${distance:,.1f} | {status}")
+    
+    # We plot the deviation from the mean for each month
+    plot_data.append({
+        "label": f"{month}-{region[0]}",
+        "value": rev
+    })
+
+# 5. Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(plot_data)} ]]")`,
+
+    'data-kpi': `# Scenario 5: Region Market Efficiency index (Revenue per Unit)
+# Aggregates units sold and revenue per region, calculates KPIs
+
+region_kpis = {}
+
+for row in sales_data:
+    region = row["region"]
+    rev = row["revenue"]
+    units = row["units"]
+    
+    if region not in region_kpis:
+        region_kpis[region] = {"revenue": 0, "units": 0}
+        
+    region_kpis[region]["revenue"] += rev
+    region_kpis[region]["units"] += units
+
+print("--- Region Sales Efficiency Analysis ---")
+chart_data = []
+for region, data in region_kpis.items():
+    rev_per_unit = data["revenue"] / data["units"]
+    print(f"Region: {region}")
+    print(f"  Total Revenue: ${data['revenue']:,}")
+    print(f"  Total Units: {data['units']:,}")
+    print(f"  Efficiency (Revenue/Unit): ${rev_per_unit:.2f}")
+    
+    chart_data.append({
+        "label": region,
+        "value": rev_per_unit
+    })
+
+# Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(chart_data)} ]]")`,
+
+    'data-forecast': `# Scenario 6: Moving Average Trend Forecasting (July Projection)
+# Computes store-wide monthly revenue and forecasts July sales
+
+# 1. Group store-wide sales by month
+monthly_revenue = {}
+for row in sales_data:
+    month = row["month"]
+    monthly_revenue[month] = monthly_revenue.get(month, 0) + row["revenue"]
+
+# 2. Sort months chronologically
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+sorted_months = sorted(monthly_revenue.keys(), key=lambda m: months_order.get(m, 0))
+
+# 3. Simple 2-Month Moving Average Forecast for July
+# Forecast July = (May + June) / 2
+last_two = [monthly_revenue[m] for m in sorted_months[-2:]]
+july_forecast = sum(last_two) / 2
+
+print("--- Monthly Revenue & July Forecast ---")
+plot_data = []
+for month in sorted_months:
+    rev = monthly_revenue[month]
+    print(f"{month} Revenue: ${rev:,.2f}")
+    plot_data.append({"label": month, "value": rev})
+
+print(f"Projected July Revenue: ${july_forecast:,.2f} (Based on 2-Mo Moving Avg)")
+plot_data.append({"label": "Jul (Proj)", "value": july_forecast})
+
+# Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(plot_data)} ]]")`,
+
     'data-custom': `# Write your custom Python data analyzer here!
 # Pre-loaded variable 'sales_data' is a list of dictionaries.
 # Ensure your print output contains a json payload in double brackets:
@@ -1860,8 +1971,16 @@ print(f"[[ {json_payload} ]]")
       rows.forEach(r => {
         if (r.dataset.region === 'North') r.classList.add('highlighted');
       });
-    } else if (scenario === 'data-avg') {
+    } else if (scenario === 'data-avg' || scenario === 'data-kpi' || scenario === 'data-forecast') {
       rows.forEach(r => r.classList.add('highlighted'));
+    } else if (scenario === 'data-outliers') {
+      rows.forEach(r => {
+        const month = r.cells[0].textContent;
+        const region = r.cells[1].textContent;
+        if (month === 'Jun' && region === 'South') {
+          r.classList.add('highlighted');
+        }
+      });
     }
   }
 
@@ -1969,6 +2088,12 @@ sys.stderr = io.StringIO()
         mockStdout = "--- Monthly Revenue for North Region ---\nMonth: Jan | Revenue: $12,000 | Units Sold: 450\nMonth: Feb | Revenue: $14,000 | Units Sold: 500\nMonth: Mar | Revenue: $16,500 | Units Sold: 580\nMonth: Apr | Revenue: $17,500 | Units Sold: 620\nMonth: May | Revenue: $19,500 | Units Sold: 700\nMonth: Jun | Revenue: $24,000 | Units Sold: 850\n[[ [{\"label\": \"Jan\", \"value\": 12000}, {\"label\": \"Feb\", \"value\": 14000}, {\"label\": \"Mar\", \"value\": 16500}, {\"label\": \"Apr\", \"value\": 17500}, {\"label\": \"May\", \"value\": 19500}, {\"label\": \"Jun\", \"value\": 24000}] ]]";
       } else if (val === 'data-growth') {
         mockStdout = "--- Store-wide Cumulative Revenue & Growth ---\nMonth: Jan | Month Rev: $27,000.00 | Cum. Rev: $27,000.00 (Baseline)\nMonth: Feb | Month Rev: $32,000.00 | Cum. Rev: $59,000.00 (+18.5% MoM)\nMonth: Mar | Month Rev: $36,500.00 | Cum. Rev: $95,500.00 (+14.1% MoM)\nMonth: Apr | Month Rev: $39,500.00 | Cum. Rev: $135,000.00 (+8.2% MoM)\nMonth: May | Month Rev: $43,500.00 | Cum. Rev: $178,500.00 (+10.1% MoM)\nMonth: Jun | Month Rev: $53,000.00 | Cum. Rev: $231,500.00 (+21.8% MoM)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 59000}, {\"label\": \"Mar\", \"value\": 95500}, {\"label\": \"Apr\", \"value\": 135000}, {\"label\": \"May\", \"value\": 178500}, {\"label\": \"Jun\", \"value\": 231500}] ]]";
+      } else if (val === 'data-outliers') {
+        mockStdout = "--- Dataset Statistics ---\nMean Revenue: $19,291.67\nStd Deviation: $4,643.36\n--------------------------\n--- Outlier Detection Log ---\nJan (North): $12,000 | Dist: $7,291.7 | NORMAL\nJan (South): $15,000 | Dist: $4,291.7 | NORMAL\nFeb (North): $14,000 | Dist: $5,291.7 | NORMAL\nFeb (South): $18,000 | Dist: $1,291.7 | NORMAL\nMar (North): $16,500 | Dist: $2,791.7 | NORMAL\nMar (South): $20,000 | Dist: $708.3 | NORMAL\nApr (North): $17,500 | Dist: $1,791.7 | NORMAL\nApr (South): $22,000 | Dist: $2,708.3 | NORMAL\nMay (North): $19,500 | Dist: $208.3 | NORMAL\nMay (South): $24,000 | Dist: $4,708.3 | NORMAL\nJun (North): $24,000 | Dist: $4,708.3 | NORMAL\nJun (South): $29,000 | Dist: $9,708.3 | OUTLIER\n[[ [{\"label\": \"Jan-N\", \"value\": 12000}, {\"label\": \"Jan-S\", \"value\": 15000}, {\"label\": \"Feb-N\", \"value\": 14000}, {\"label\": \"Feb-S\", \"value\": 18000}, {\"label\": \"Mar-N\", \"value\": 16500}, {\"label\": \"Mar-S\", \"value\": 20000}, {\"label\": \"Apr-N\", \"value\": 17500}, {\"label\": \"Apr-S\", \"value\": 22000}, {\"label\": \"May-N\", \"value\": 19500}, {\"label\": \"May-S\", \"value\": 24000}, {\"label\": \"Jun-N\", \"value\": 24000}, {\"label\": \"Jun-S\", \"value\": 29000}] ]]";
+      } else if (val === 'data-kpi') {
+        mockStdout = "--- Region Sales Efficiency Analysis ---\nRegion: North\n  Total Revenue: $103,500\n  Total Units: 3,550\n  Efficiency (Revenue/Unit): $29.15\nRegion: South\n  Total Revenue: $128,000\n  Total Units: 4,970\n  Efficiency (Revenue/Unit): $25.75\n[[ [{\"label\": \"North\", \"value\": 29.15}, {\"label\": \"South\", \"value\": 25.75}] ]]";
+      } else if (val === 'data-forecast') {
+        mockStdout = "--- Monthly Revenue & July Forecast ---\nJan Revenue: $27,000.00\nFeb Revenue: $32,000.00\nMar Revenue: $36,500.00\nApr Revenue: $39,500.00\nMay Revenue: $43,500.00\nJun Revenue: $53,000.00\nProjected July Revenue: $48,250.00 (Based on 2-Mo Moving Avg)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 32000}, {\"label\": \"Mar\", \"value\": 36500}, {\"label\": \"Apr\", \"value\": 39500}, {\"label\": \"May\", \"value\": 43500}, {\"label\": \"Jun\", \"value\": 53000}, {\"label\": \"Jul (Proj)\", \"value\": 48250}] ]]";
       } else {
         mockStdout = "Offline mode fallback: CPython core not resolved yet. Write code when connection is online.";
       }
