@@ -1940,3 +1940,337 @@ section {
   100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
 }
 
+/* ==========================================================================
+   Data Forge (Data Analysis) Section Styles
+   ========================================================================== */
+.data-forge-section {
+  padding: 80px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.data-forge-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 12px;
+}
+
+.data-forge-tabs .tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.data-forge-tabs .tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.data-forge-tabs .tab-btn.active {
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.2);
+}
+
+.data-forge-container {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.data-explorer-pane {
+  background: var(--surface-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.data-explorer-pane .pane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-glass);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.data-table th {
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+.data-table tbody tr {
+  transition: var(--transition-smooth);
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.data-table tbody tr:hover {
+  background: rgba(56, 189, 248, 0.05);
+  cursor: pointer;
+}
+
+.data-table tbody tr.highlighted {
+  background: rgba(56, 189, 248, 0.15);
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.data-analysis-workspace {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.chart-pane {
+  background: var(--surface-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+}
+
+.chart-pane .pane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.chart-pane .pane-header .controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-workspace {
+  position: relative;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.chart-bar {
+  transition: fill 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.chart-bar:hover {
+  fill: var(--accent-gold) !important;
+  opacity: 0.9;
+}
+
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--accent-cyan);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: #fff;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: opacity 0.15s ease;
+}
+
+.chart-type-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.chart-type-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.chart-type-btn.active {
+  color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+/* Study Guides rendering styles */
+.study-guide-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  min-height: 400px;
+}
+
+.study-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+.study-guide-header h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.study-guide-content {
+  color: var(--text-primary);
+}
+
+.study-guide-content h1, .study-guide-content h2, .study-guide-content h3 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.study-guide-content h1 {
+  font-size: 2rem;
+  color: var(--accent-cyan);
+}
+
+.study-guide-content h2 {
+  font-size: 1.5rem;
+  color: var(--accent-gold);
+}
+
+.study-guide-content h3 {
+  font-size: 1.2rem;
+  color: var(--accent-mint);
+}
+
+.study-guide-content p {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.study-guide-content hr {
+  border: none;
+  border-top: 1px solid var(--border-glass);
+  margin: 24px 0;
+}
+
+.study-guide-content ul, .study-guide-content ol {
+  margin-left: 24px;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.study-guide-content li {
+  margin-bottom: 8px;
+}
+
+.code-block-study {
+  background: var(--text-editor-bg);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.math-block {
+  text-align: center;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  margin: 16px 0;
+  color: var(--accent-cyan);
+}
+
+.math-inline {
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+
+/* Print override updates */
+@media print {
+  #data-forge .editor-pane, #data-forge .data-terminal-pane, #data-forge .data-forge-tabs {
+    display: none !important;
+  }
+  
+  #data-forge .data-forge-container {
+    display: block !important;
+  }
+  
+  #data-forge .data-explorer-pane, #data-forge .chart-pane {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #ccc !important;
+    margin-bottom: 20px !important;
+    page-break-inside: avoid;
+  }
+  
+  #data-forge .data-table th {
+    color: #000 !important;
+    background: #eee !important;
+  }
+  
+  #data-forge .data-table td, #data-forge .data-table th {
+    border-bottom: 1px solid #ccc !important;
+  }
+  
+  #analysis-chart-canvas text {
+    fill: #000 !important;
+  }
+  
+  #analysis-chart-canvas line {
+    stroke: #ccc !important;
+  }
+}
+
+/* Responsiveness for Data Forge */
+@media (max-width: 1100px) {
+  .data-forge-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+

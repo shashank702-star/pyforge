@@ -39,12 +39,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (sandboxStatusDot) sandboxStatusDot.className = 'status-dot state-ready';
       if (sandboxStatusText) sandboxStatusText.textContent = 'Python 3.11 (WASM) Ready';
       if (runCodeBtn) runCodeBtn.disabled = false;
+      const runDataBtn = document.getElementById('run-data-code-btn');
+      if (runDataBtn) runDataBtn.disabled = false;
       logTerminal(">>> CPython 3.11 WebAssembly Core initialized. Sandbox ready.", "success");
     } catch (err) {
       console.warn("WASM Core initialization failed, using Fallback Sandbox mode: ", err);
       if (sandboxStatusDot) sandboxStatusDot.className = 'status-dot state-fallback';
       if (sandboxStatusText) sandboxStatusText.textContent = 'Python (Lite Sandbox) Active';
       if (runCodeBtn) runCodeBtn.disabled = false;
+      const runDataBtn = document.getElementById('run-data-code-btn');
+      if (runDataBtn) runDataBtn.disabled = false;
       logTerminal(">>> Sandbox offline. Loaded local lightweight regex interpreter fallback.", "system");
     }
   }
@@ -1427,6 +1431,862 @@ sys.stderr = io.StringIO()
       console.warn('[Auto-Sync] Failed to check Pyodide package version: ', err);
     }
   }
+
+  // Trigger auto sync on startup
+  runAutoSync();
+
+  // ==========================================
+  // 13. DATA FORGE (DATA ANALYSIS) MODULE
+  // ==========================================
+
+  const dataTemplates = {
+    'data-avg': `# Scenario 1: Calculate Revenue Averages per Region
+# We use the pre-loaded variable 'sales_data'
+
+# 1. Initialize aggregators
+region_stats = {}
+
+for row in sales_data:
+    region = row["region"]
+    rev = row["revenue"]
+    units = row["units"]
+    
+    if region not in region_stats:
+        region_stats[region] = {"total_revenue": 0, "total_units": 0, "count": 0}
+        
+    region_stats[region]["total_revenue"] += rev
+    region_stats[region]["total_units"] += units
+    region_stats[region]["count"] += 1
+
+# 2. Compute averages and format for visualization
+chart_data = []
+print("--- Region Sales Summary Averages ---")
+for region, stats in region_stats.items():
+    avg_rev = stats["total_revenue"] / stats["count"]
+    avg_units = stats["total_units"] / stats["count"]
+    print(f"Region: {region} | Avg Revenue: \${avg_rev:,.2f} | Avg Units: {avg_units:.1f}")
+    
+    chart_data.append({
+        "label": region,
+        "value": avg_rev
+    })
+
+# 3. Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(chart_data)} ]]")`,
+
+    'data-filter': `# Scenario 2: Filter and Plot Monthly Sales for North Region
+# We use the pre-loaded variable 'sales_data'
+
+# 1. Filter records for North region
+north_sales = [row for row in sales_data if row["region"] == "North"]
+
+# 2. Sort chronologically (Jan -> Jun)
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+north_sales.sort(key=lambda x: months_order.get(x["month"], 0))
+
+# 3. Print monthly statistics
+print("--- Monthly Revenue for North Region ---")
+chart_data = []
+for row in north_sales:
+    month = row["month"]
+    rev = row["revenue"]
+    units = row["units"]
+    print(f"Month: {month} | Revenue: \${rev:,} | Units Sold: {units}")
+    
+    chart_data.append({
+        "label": month,
+        "value": rev
+    })
+
+# 4. Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(chart_data)} ]]")`,
+
+    'data-growth': `# Scenario 3: Monthly Aggregate Revenue & Cumulative Growth
+# We use the pre-loaded variable 'sales_data'
+
+# 1. Group and sum revenue by month
+monthly_revenue = {}
+for row in sales_data:
+    month = row["month"]
+    rev = row["revenue"]
+    monthly_revenue[month] = monthly_revenue.get(month, 0) + rev
+
+# 2. Sort months chronologically
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+sorted_months = sorted(monthly_revenue.keys(), key=lambda m: months_order.get(m, 0))
+
+# 3. Calculate cumulative revenue and growth rates
+cumulative_rev = 0
+chart_data = []
+print("--- Store-wide Cumulative Revenue & Growth ---")
+
+prev_rev = None
+for month in sorted_months:
+    rev = monthly_revenue[month]
+    cumulative_rev += rev
+    
+    # Calculate MoM Growth
+    if prev_rev is not None:
+        growth = ((rev - prev_rev) / prev_rev) * 100
+        growth_str = f"{growth:+.1f}% MoM"
+    else:
+        growth_str = "Baseline"
+        
+    print(f"Month: {month} | Month Rev: \${rev:,.2f} | Cum. Rev: \${cumulative_rev:,.2f} ({growth_str})")
+    prev_rev = rev
+    
+    chart_data.append({
+        "label": month,
+        "value": cumulative_rev
+    })
+
+# 4. Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(chart_data)} ]]")`,
+
+    'data-custom': `# Write your custom Python data analyzer here!
+# Pre-loaded variable 'sales_data' is a list of dictionaries.
+# Ensure your print output contains a json payload in double brackets:
+# print("[[ " + json.dumps(chart_data) + " ]]")
+import json
+
+# Example: Plot monthly units sold (all regions combined)
+monthly_units = {}
+for r in sales_data:
+    monthly_units[r['month']] = monthly_units.get(r['month'], 0) + r['units']
+
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+sorted_months = sorted(monthly_units.keys(), key=lambda m: months_order.get(m, 0))
+
+payload = [{"label": m, "value": monthly_units[m]} for m in sorted_months]
+print("--- Monthly Combined Units Sold ---")
+for item in payload:
+    print(f"Month: {item['label']} | Units: {item['value']}")
+
+print(f"[[ {json.dumps(payload)} ]]")`
+  };
+
+  const dataBasicsNotesText = `# Reference Notes: Foundations of Data Analysis
+
+Data Analysis is the systematic process of cleaning, transforming, and modeling raw data to discover useful information, draw conclusions, and support decision-making.
+
+---
+
+## 1. The Data Pipeline Lifecycle
+
+Every analytics task follows a structured sequence of operations:
+1. **Data Acquisition**: Fetching raw data from files (CSV, JSON), databases, or API responses.
+2. **Data Cleaning & Preprocessing**: Correcting formatting, dropping duplicates, and handling missing observations.
+3. **Exploratory Data Analysis (EDA)**: Calculating summary statistics to understand correlations and value spreads.
+4. **Data Visualization**: Transforming numbers into graphical charts (bar charts, histograms, line graphs) to reveal trends.
+
+---
+
+## 2. Core Data Cleaning Techniques
+
+Raw real-world datasets are notoriously noisy. Before modeling data, you must clean it:
+
+### Handling Missing (Null) Values:
+* **Deletion**: Drop records containing missing fields entirely.
+* **Imputation**: Replace missing fields with a calculated value, such as the dataset's **mean** or **median**.
+
+### Outlier Detection:
+Outliers are extreme anomalies that skew averages. They are often identified using:
+* **Standard Deviation method**: Values that fall further than 3 standard deviations from the mean.
+* **Interquartile Range (IQR)**: Checking bounds relative to the 25th and 75th percentiles.
+
+---
+
+## 3. Statistical Summarization (First Principles)
+
+To analyze any numeric series, we compute the following summary metrics:
+
+### Mean (Arithmetic Average)
+The sum of all values divided by the count.
+$$\\text{Mean} (\\mu) = \\frac{\\sum_{i=1}^{n} x_i}{n}$$
+
+### Median (Middle Value)
+The middle value when the data is sorted in ascending order.
+* If $n$ is odd: The value at index $\\frac{n+1}{2}$.
+* If $n$ is even: The average of values at indexes $\\frac{n}{2}$ and $\\frac{n}{2} + 1$.
+* **Why it matters**: The median is highly robust against outliers.
+
+### Variance & Standard Deviation
+Measure the spread of data around the mean. Standard deviation is the square root of variance:
+$$\\text{Variance} (\\sigma^2) = \\frac{\\sum (x_i - \\mu)^2}{n}$$
+$$\\text{Standard Deviation} (\\sigma) = \\sqrt{\\text{Variance}}$$
+`;
+
+  const dataPythonNotesText = `# Reference Notes: Data Analysis with Python
+
+While libraries like Pandas and NumPy are standard in professional data science, understanding how to clean, aggregate, and format datasets using **pure Python** is essential for building core coding skills.
+
+---
+
+## 1. Structuring Datasets with Collections
+
+In pure Python, datasets are typically modeled as a **list of dictionaries** (mimicking rows in a SQL table or CSV records):
+
+\`\`\`python
+sales_data = [
+    {"month": "Jan", "region": "North", "revenue": 12000, "units": 450},
+    {"month": "Jan", "region": "South", "revenue": 15000, "units": 600},
+    {"month": "Feb", "region": "North", "revenue": 14000, "units": 500},
+    {"month": "Feb", "region": "South", "revenue": 18000, "units": 720}
+]
+\`\`\`
+
+---
+
+## 2. Cleaning Datasets in Python
+
+Here is how you clean data (e.g. dropping records with missing revenue fields or bad formats) using list comprehensions:
+
+\`\`\`python
+raw_records = [
+    {"item": "Laptop", "price": 999.00},
+    {"item": "Mouse", "price": None},
+    {"item": "Keyboard", "price": 45.00},
+    {"item": "Monitor", "price": -10.00}
+]
+
+# Clean pipeline: keep price if not None and greater than 0
+clean_records = [r for r in raw_records if r["price"] is not None and r["price"] > 0]
+print(clean_records)
+\`\`\`
+
+---
+
+## 3. Data Aggregations & Grouping
+
+To aggregate metrics (like grouping revenue by region or month), use dictionary accumulators:
+
+\`\`\`python
+# Grouping revenue by region
+revenue_by_region = {}
+
+for record in sales_data:
+    region = record["region"]
+    revenue = record["revenue"]
+    
+    if region not in revenue_by_region:
+        revenue_by_region[region] = 0
+    revenue_by_region[region] += revenue
+
+print(revenue_by_region)
+\`\`\`
+
+---
+
+## 4. Formatting Datasets for Charting Engines
+
+When sending calculated data to visualization widgets (like SVG charters or HTML interfaces), format the aggregated results as structured JSON:
+
+\`\`\`python
+import json
+
+chart_data = []
+for label, value in revenue_by_region.items():
+    chart_data.append({
+        "label": label,
+        "value": value
+    })
+
+# Convert to JSON string
+json_payload = json.dumps(chart_data)
+
+# Print with special brackets so JavaScript can extract and plot it live
+print(f"[[ {json_payload} ]]")
+\`\`\`
+`;
+
+  // HTML nodes cache
+  const dataCodeTextarea = document.getElementById('data-code-textarea');
+  const dataLineNumbers = document.getElementById('data-line-numbers');
+  const dataScenarioSelect = document.getElementById('data-scenario-select');
+  const dataTerminalBody = document.getElementById('data-terminal-body');
+  const runDataCodeBtn = document.getElementById('run-data-code-btn');
+  const resetDataCodeBtn = document.getElementById('reset-data-code-btn');
+  const clearDataTerminalBtn = document.getElementById('clear-data-terminal-btn');
+  const dataChartTooltipEl = document.getElementById('data-chart-tooltip');
+  
+  // Tab panels & buttons
+  const dataTabSandbox = document.getElementById('data-tab-sandbox');
+  const dataTabGuideBasics = document.getElementById('data-tab-guide-basics');
+  const dataTabGuidePython = document.getElementById('data-tab-guide-python');
+  
+  const dataPanelSandbox = document.getElementById('data-panel-sandbox');
+  const dataPanelGuideBasics = document.getElementById('data-panel-guide-basics');
+  const dataPanelGuidePython = document.getElementById('data-panel-guide-python');
+  
+  const dataGuideBasicsContent = document.getElementById('data-guide-basics-content');
+  const dataGuidePythonContent = document.getElementById('data-guide-python-content');
+  
+  let dataChartType = 'bar'; // default chart format
+  let currentChartData = null;
+  let chartAnimId = null;
+
+  // Markdown renderer
+  function parseMarkdown(md) {
+    let html = md;
+    // Basic escapes
+    html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Headers
+    html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+    html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+    html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+    html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+    
+    // Rules
+    html = html.replace(/^---$/gim, '<hr>');
+    
+    // Bold / Italic
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Code blocks
+    html = html.replace(/```python\s*([\s\S]*?)\s*```/g, '<pre class="code-block-study"><code class="fira-code">$1</code></pre>');
+    html = html.replace(/```([\s\S]*?)\s*```/g, '<pre class="code-block-study"><code>$1</code></pre>');
+    
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    // Math
+    html = html.replace(/\$\$(.*?)\$\$/g, '<div class="math-block">$1</div>');
+    html = html.replace(/\$(.*?)\$/g, '<span class="math-inline">$1</span>');
+    
+    // Lists
+    html = html.replace(/^\*\s+(.*$)/gim, '<li>$1</li>');
+    html = html.replace(/^\-\s+(.*$)/gim, '<li>$1</li>');
+    html = html.replace(/^\d+\.\s+(.*$)/gim, '<li>$1</li>');
+    
+    const blocks = html.split('\n\n');
+    const processed = blocks.map(block => {
+      let trimmed = block.trim();
+      if (!trimmed) return '';
+      if (trimmed.startsWith('<h') || trimmed.startsWith('<pre') || trimmed.startsWith('<hr') || trimmed.startsWith('<div')) {
+        return trimmed;
+      }
+      if (trimmed.startsWith('<li>')) {
+        return '<ul>' + trimmed + '</ul>';
+      }
+      return '<p>' + trimmed.replace(/\n/g, '<br>') + '</p>';
+    });
+    
+    return processed.join('\n');
+  }
+
+  // Load study guide contents
+  async function loadStudyGuide(type, targetEl, fallbackText, url) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Load failed");
+      const md = await response.text();
+      targetEl.innerHTML = parseMarkdown(md);
+    } catch (e) {
+      console.warn(`[Data Forge] Notes fetch failed (probably CORS file:// access), using packaged notes: ${e}`);
+      targetEl.innerHTML = parseMarkdown(fallbackText);
+    }
+  }
+
+  // Load guides
+  loadStudyGuide('basics', dataGuideBasicsContent, dataBasicsNotesText, 'notes/data_basics_notes.md');
+  loadStudyGuide('python', dataGuidePythonContent, dataPythonNotesText, 'notes/data_python_notes.md');
+
+  // Tab controls
+  function switchDataTab(activeTab) {
+    dataTabSandbox.classList.remove('active');
+    dataTabGuideBasics.classList.remove('active');
+    dataTabGuidePython.classList.remove('active');
+    
+    dataPanelSandbox.classList.add('hidden');
+    dataPanelGuideBasics.classList.add('hidden');
+    dataPanelGuidePython.classList.add('hidden');
+    
+    if (activeTab === 'sandbox') {
+      dataTabSandbox.classList.add('active');
+      dataPanelSandbox.classList.remove('hidden');
+    } else if (activeTab === 'basics') {
+      dataTabGuideBasics.classList.add('active');
+      dataPanelGuideBasics.classList.remove('hidden');
+      addXP(10);
+    } else if (activeTab === 'python') {
+      dataTabGuidePython.classList.add('active');
+      dataPanelGuidePython.classList.remove('hidden');
+      addXP(10);
+    }
+  }
+
+  dataTabSandbox.addEventListener('click', () => switchDataTab('sandbox'));
+  dataTabGuideBasics.addEventListener('click', () => switchDataTab('basics'));
+  dataTabGuidePython.addEventListener('click', () => switchDataTab('python'));
+
+  // Editor configuration
+  function updateDataLineNumbers(text) {
+    const linesCount = text.split('\n').length;
+    let numbersHtml = '';
+    for (let i = 1; i <= Math.max(linesCount, 10); i++) {
+      numbersHtml += `<span>${i}</span>`;
+    }
+    dataLineNumbers.innerHTML = numbersHtml;
+  }
+
+  dataCodeTextarea.addEventListener('input', () => {
+    updateDataLineNumbers(dataCodeTextarea.value);
+  });
+
+  dataScenarioSelect.addEventListener('change', () => {
+    const val = dataScenarioSelect.value;
+    if (dataTemplates[val]) {
+      dataCodeTextarea.value = dataTemplates[val];
+      updateDataLineNumbers(dataTemplates[val]);
+      clearDataTerminal();
+      logDataTerminal(`>>> Scenario "${val}" loaded. Click 'Run Analysis' to process.`, 'system');
+      
+      // Update interactive highlights on the explorer table
+      highlightExplorerTable(val);
+    }
+  });
+
+  // Table row highlighting logic
+  function highlightExplorerTable(scenario) {
+    const rows = document.querySelectorAll('#sales-data-table tbody tr');
+    rows.forEach(r => r.classList.remove('highlighted'));
+    
+    if (scenario === 'data-filter') {
+      rows.forEach(r => {
+        if (r.dataset.region === 'North') r.classList.add('highlighted');
+      });
+    } else if (scenario === 'data-avg') {
+      rows.forEach(r => r.classList.add('highlighted'));
+    }
+  }
+
+  // Interactive Table click handlers
+  document.querySelectorAll('#sales-data-table tbody tr').forEach(row => {
+    row.addEventListener('click', () => {
+      const region = row.dataset.region;
+      
+      // Highlight matching region rows
+      document.querySelectorAll('#sales-data-table tbody tr').forEach(r => {
+        if (r.dataset.region === region) {
+          r.classList.add('highlighted');
+        } else {
+          r.classList.remove('highlighted');
+        }
+      });
+      
+      logDataTerminal(`>>> Clicked ${region} Region Row. Try modifying code to filter regional sales: \n[row for row in sales_data if row["region"] == "${region}"]`, 'system');
+      addXP(5);
+    });
+  });
+
+  // Editor Actions
+  runDataCodeBtn.addEventListener('click', () => {
+    executeDataAnalysisCode(dataCodeTextarea.value);
+  });
+
+  resetDataCodeBtn.addEventListener('click', () => {
+    const val = dataScenarioSelect.value;
+    if (dataTemplates[val]) {
+      dataCodeTextarea.value = dataTemplates[val];
+    } else {
+      dataCodeTextarea.value = '';
+    }
+    updateDataLineNumbers(dataCodeTextarea.value);
+    clearDataTerminal();
+    logDataTerminal('>>> Editor reset.', 'system');
+  });
+
+  clearDataTerminalBtn.addEventListener('click', clearDataTerminal);
+
+  function clearDataTerminal() {
+    dataTerminalBody.innerHTML = '';
+  }
+
+  function logDataTerminal(message, type = 'val') {
+    const line = document.createElement('div');
+    line.className = `terminal-output-line output-${type}`;
+    line.textContent = message;
+    dataTerminalBody.appendChild(line);
+    dataTerminalBody.scrollTop = dataTerminalBody.scrollHeight;
+  }
+
+  // Execute CPython WebAssembly
+  async function executeDataAnalysisCode(code) {
+    clearDataTerminal();
+    logDataTerminal('>>> Processing sandbox analysis...', 'system');
+    
+    // Inject the mock sales data before compiling user script
+    const datasetInjection = `
+sales_data = [
+    {"month": "Jan", "region": "North", "units": 450, "revenue": 12000},
+    {"month": "Jan", "region": "South", "units": 600, "revenue": 15000},
+    {"month": "Feb", "region": "North", "units": 500, "revenue": 14000},
+    {"month": "Feb", "region": "South", "units": 720, "revenue": 18000},
+    {"month": "Mar", "region": "North", "units": 580, "revenue": 16500},
+    {"month": "Mar", "region": "South", "units": 800, "revenue": 20000},
+    {"month": "Apr", "region": "North", "units": 620, "revenue": 17500},
+    {"month": "Apr", "region": "South", "units": 850, "revenue": 22000},
+    {"month": "May", "region": "North", "units": 700, "revenue": 19500},
+    {"month": "May", "region": "South", "units": 900, "revenue": 24000},
+    {"month": "Jun", "region": "North", "units": 850, "revenue": 24000},
+    {"month": "Jun", "region": "South", "units": 1050, "revenue": 29000}
+]
+`;
+
+    if (pyodideInstance) {
+      try {
+        await pyodideInstance.runPythonAsync(`
+import sys
+import io
+sys.stdout = io.StringIO()
+sys.stderr = io.StringIO()
+        `);
+        
+        // Load variables
+        await pyodideInstance.runPythonAsync(datasetInjection);
+        // Load user script
+        await pyodideInstance.runPythonAsync(code);
+        
+        const stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+        const stderr = pyodideInstance.runPython("sys.stderr.getvalue()");
+        
+        processWasmOutputs(stdout, stderr);
+      } catch (err) {
+        logDataTerminal(err.message, 'err');
+      }
+    } else {
+      // offline mode fallback
+      const val = dataScenarioSelect.value;
+      let mockStdout = "";
+      if (val === 'data-avg') {
+        mockStdout = "--- Region Sales Summary Averages ---\nRegion: North | Avg Revenue: $17,250.00 | Avg Units: 616.7\nRegion: South | Avg Revenue: $21,333.33 | Avg Units: 820.0\n[[ [{\"label\": \"North\", \"value\": 17250}, {\"label\": \"South\", \"value\": 21333.33}] ]]";
+      } else if (val === 'data-filter') {
+        mockStdout = "--- Monthly Revenue for North Region ---\nMonth: Jan | Revenue: $12,000 | Units Sold: 450\nMonth: Feb | Revenue: $14,000 | Units Sold: 500\nMonth: Mar | Revenue: $16,500 | Units Sold: 580\nMonth: Apr | Revenue: $17,500 | Units Sold: 620\nMonth: May | Revenue: $19,500 | Units Sold: 700\nMonth: Jun | Revenue: $24,000 | Units Sold: 850\n[[ [{\"label\": \"Jan\", \"value\": 12000}, {\"label\": \"Feb\", \"value\": 14000}, {\"label\": \"Mar\", \"value\": 16500}, {\"label\": \"Apr\", \"value\": 17500}, {\"label\": \"May\", \"value\": 19500}, {\"label\": \"Jun\", \"value\": 24000}] ]]";
+      } else if (val === 'data-growth') {
+        mockStdout = "--- Store-wide Cumulative Revenue & Growth ---\nMonth: Jan | Month Rev: $27,000.00 | Cum. Rev: $27,000.00 (Baseline)\nMonth: Feb | Month Rev: $32,000.00 | Cum. Rev: $59,000.00 (+18.5% MoM)\nMonth: Mar | Month Rev: $36,500.00 | Cum. Rev: $95,500.00 (+14.1% MoM)\nMonth: Apr | Month Rev: $39,500.00 | Cum. Rev: $135,000.00 (+8.2% MoM)\nMonth: May | Month Rev: $43,500.00 | Cum. Rev: $178,500.00 (+10.1% MoM)\nMonth: Jun | Month Rev: $53,000.00 | Cum. Rev: $231,500.00 (+21.8% MoM)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 59000}, {\"label\": \"Mar\", \"value\": 95500}, {\"label\": \"Apr\", \"value\": 135000}, {\"label\": \"May\", \"value\": 178500}, {\"label\": \"Jun\", \"value\": 231500}] ]]";
+      } else {
+        mockStdout = "Offline mode fallback: CPython core not resolved yet. Write code when connection is online.";
+      }
+      processWasmOutputs(mockStdout, "");
+    }
+  }
+
+  function processWasmOutputs(stdout, stderr) {
+    if (stderr) {
+      logDataTerminal(stderr, 'err');
+      return;
+    }
+    
+    // Parse double brackets
+    const bracketRegex = /\[\[\s*([\s\S]*?)\s*\]\]/;
+    const match = stdout.match(bracketRegex);
+    
+    let chartPayload = null;
+    if (match) {
+      try {
+        chartPayload = JSON.parse(match[1]);
+      } catch (err) {
+        logDataTerminal("Chart parsing error: printed invalid JSON inside double brackets [[ ]]", "err");
+      }
+    }
+    
+    // Display cleaned stdout (remove the bracket payload from display text)
+    const cleanStdout = stdout.replace(bracketRegex, '').trim();
+    if (cleanStdout) {
+      logDataTerminal(cleanStdout, 'val');
+    } else if (!chartPayload) {
+      logDataTerminal("(No stdout printed)", "val");
+    }
+    
+    if (chartPayload) {
+      logDataTerminal("Plotting dynamic chart visualization...", "success");
+      animateChart(chartPayload);
+      addXP(30);
+    }
+  }
+
+  // Animating chart
+  function animateChart(data) {
+    if (chartAnimId) cancelAnimationFrame(chartAnimId);
+    
+    const duration = 600;
+    const start = performance.now();
+    
+    function drawStep(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Cubic easing
+      const ease = 1 - Math.pow(1 - progress, 3);
+      
+      renderDataAnalysisChart(data, ease);
+      
+      if (progress < 1) {
+        chartAnimId = requestAnimationFrame(drawStep);
+      }
+    }
+    chartAnimId = requestAnimationFrame(drawStep);
+  }
+
+  function renderDataAnalysisChart(data, ease = 1) {
+    if (!data || !Array.isArray(data) || data.length === 0) return;
+    currentChartData = data;
+    
+    const svg = document.getElementById('analysis-chart-canvas');
+    if (!svg) return;
+    
+    // Clear dynamic elements
+    svg.querySelectorAll('.dynamic-plot-element').forEach(el => el.remove());
+    
+    const maxVal = Math.max(...data.map(d => d.value), 10);
+    const yMax = maxVal * 1.15;
+    
+    const plotLeft = 60;
+    const plotRight = 570;
+    const plotTop = 30;
+    const plotBottom = 250;
+    
+    const plotWidth = plotRight - plotLeft;
+    const plotHeight = plotBottom - plotTop;
+    
+    // Render Y ticks & labels
+    const ticksCount = 5;
+    for (let i = 0; i < ticksCount; i++) {
+      const val = (yMax / (ticksCount - 1)) * i;
+      const y = plotBottom - (i / (ticksCount - 1)) * plotHeight;
+      
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", plotLeft - 10);
+      text.setAttribute("y", y + 4);
+      text.setAttribute("fill", "var(--text-secondary)");
+      text.setAttribute("text-anchor", "end");
+      text.setAttribute("font-size", "10");
+      text.setAttribute("font-family", "var(--font-sans)");
+      text.className = 'dynamic-plot-element';
+      
+      if (val >= 1000) {
+        text.textContent = `$${(val / 1000).toFixed(1)}k`;
+      } else {
+        text.textContent = `$${val.toFixed(0)}`;
+      }
+      svg.appendChild(text);
+    }
+    
+    // Redraw axis lines to make sure they are on top of ticks
+    
+    if (dataChartType === 'bar') {
+      const n = data.length;
+      const spacing = plotWidth / n;
+      const barWidth = spacing * 0.6;
+      
+      data.forEach((d, i) => {
+        const x = plotLeft + i * spacing + (spacing - barWidth) / 2;
+        const targetHeight = (d.value / yMax) * plotHeight;
+        const currentHeight = targetHeight * ease;
+        const y = plotBottom - currentHeight;
+        
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", barWidth);
+        rect.setAttribute("height", currentHeight);
+        rect.setAttribute("rx", "4");
+        rect.setAttribute("ry", "4");
+        rect.setAttribute("fill", "url(#data-bar-gradient)");
+        rect.className = 'chart-bar dynamic-plot-element';
+        
+        ensureSvgGradients(svg);
+        
+        rect.addEventListener('mousemove', (e) => {
+          showChartTooltip(e, d.label, d.value);
+        });
+        rect.addEventListener('mouseout', hideChartTooltip);
+        
+        svg.appendChild(rect);
+        
+        // X-label
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", x + barWidth / 2);
+        label.setAttribute("y", plotBottom + 20);
+        label.setAttribute("fill", "var(--text-secondary)");
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("font-size", "10");
+        label.setAttribute("font-weight", "600");
+        label.setAttribute("font-family", "var(--font-sans)");
+        label.className = 'dynamic-plot-element';
+        label.textContent = d.label;
+        svg.appendChild(label);
+      });
+    } else if (dataChartType === 'line') {
+      const n = data.length;
+      const spacing = n > 1 ? plotWidth / (n - 1) : plotWidth;
+      
+      let pathD = '';
+      let areaD = `M ${plotLeft} ${plotBottom}`;
+      
+      const points = [];
+      data.forEach((d, i) => {
+        const x = plotLeft + i * spacing;
+        const targetHeight = (d.value / yMax) * plotHeight;
+        const currentHeight = targetHeight * ease;
+        const y = plotBottom - currentHeight;
+        points.push({ x, y, label: d.label, value: d.value });
+        
+        if (i === 0) {
+          pathD += `M ${x} ${y}`;
+        } else {
+          pathD += ` L ${x} ${y}`;
+        }
+        areaD += ` L ${x} ${y}`;
+      });
+      
+      areaD += ` L ${plotLeft + (n - 1) * spacing} ${plotBottom} Z`;
+      
+      if (points.length > 0) {
+        ensureSvgGradients(svg);
+        const areaPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        areaPath.setAttribute("d", areaD);
+        areaPath.setAttribute("fill", "url(#data-line-area-gradient)");
+        areaPath.className = 'dynamic-plot-element';
+        svg.appendChild(areaPath);
+        
+        const linePath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        linePath.setAttribute("d", pathD);
+        linePath.setAttribute("fill", "none");
+        linePath.setAttribute("stroke", "var(--accent-cyan)");
+        linePath.setAttribute("stroke-width", "3");
+        linePath.className = 'dynamic-plot-element';
+        svg.appendChild(linePath);
+      }
+      
+      points.forEach(p => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", p.x);
+        circle.setAttribute("cy", p.y);
+        circle.setAttribute("r", "5");
+        circle.setAttribute("fill", "var(--accent-cyan)");
+        circle.setAttribute("stroke", "var(--bg-primary)");
+        circle.setAttribute("stroke-width", "2");
+        circle.className = 'dynamic-plot-element';
+        circle.style.cursor = 'pointer';
+        
+        circle.addEventListener('mousemove', (e) => {
+          showChartTooltip(e, p.label, p.value);
+        });
+        circle.addEventListener('mouseout', hideChartTooltip);
+        svg.appendChild(circle);
+        
+        // X-label
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", p.x);
+        label.setAttribute("y", plotBottom + 20);
+        label.setAttribute("fill", "var(--text-secondary)");
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("font-size", "10");
+        label.setAttribute("font-weight", "600");
+        label.setAttribute("font-family", "var(--font-sans)");
+        label.className = 'dynamic-plot-element';
+        label.textContent = p.label;
+        svg.appendChild(label);
+      });
+    }
+  }
+
+  function ensureSvgGradients(svg) {
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      svg.appendChild(defs);
+    }
+    
+    if (!document.getElementById('data-bar-gradient')) {
+      const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+      grad.setAttribute("id", "data-bar-gradient");
+      grad.setAttribute("x1", "0");
+      grad.setAttribute("y1", "1");
+      grad.setAttribute("x2", "0");
+      grad.setAttribute("y2", "0");
+      
+      const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+      stop1.setAttribute("offset", "0%");
+      stop1.setAttribute("stop-color", "rgba(56, 189, 248, 0.2)");
+      
+      const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+      stop2.setAttribute("offset", "100%");
+      stop2.setAttribute("stop-color", "var(--accent-cyan)");
+      
+      grad.appendChild(stop1);
+      grad.appendChild(stop2);
+      defs.appendChild(grad);
+    }
+    
+    if (!document.getElementById('data-line-area-gradient')) {
+      const grad = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+      grad.setAttribute("id", "data-line-area-gradient");
+      grad.setAttribute("x1", "0");
+      grad.setAttribute("y1", "0");
+      grad.setAttribute("x2", "0");
+      grad.setAttribute("y2", "1");
+      
+      const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+      stop1.setAttribute("offset", "0%");
+      stop1.setAttribute("stop-color", "rgba(56, 189, 248, 0.35)");
+      
+      const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+      stop2.setAttribute("offset", "100%");
+      stop2.setAttribute("stop-color", "rgba(56, 189, 248, 0)");
+      
+      grad.appendChild(stop1);
+      grad.appendChild(stop2);
+      defs.appendChild(grad);
+    }
+  }
+
+  function showChartTooltip(e, label, value) {
+    if (!dataChartTooltipEl) return;
+    const container = document.querySelector('#data-panel-sandbox .chart-workspace');
+    const containerRect = container.getBoundingClientRect();
+    
+    const x = e.clientX - containerRect.left;
+    const y = e.clientY - containerRect.top;
+    
+    dataChartTooltipEl.style.left = `${x + 15}px`;
+    dataChartTooltipEl.style.top = `${y - 45}px`;
+    
+    const formattedVal = typeof value === 'number' ? value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) : value;
+    dataChartTooltipEl.innerHTML = `<strong>${label}</strong><br><span style="color:var(--accent-cyan);">$${formattedVal}</span>`;
+    dataChartTooltipEl.classList.remove('hidden');
+  }
+
+  function hideChartTooltip() {
+    if (dataChartTooltipEl) {
+      dataChartTooltipEl.classList.add('hidden');
+    }
+  }
+
+  // Chart Type toggles
+  document.querySelectorAll('#data-forge .chart-type-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('#data-forge .chart-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      dataChartType = btn.dataset.type;
+      
+      // Re-render chart if we already have data
+      if (currentChartData) {
+        renderDataAnalysisChart(currentChartData);
+      }
+    });
+  });
+
+  // Pre-load default template
+  dataCodeTextarea.value = dataTemplates['data-avg'];
+  updateDataLineNumbers(dataTemplates['data-avg']);
+  highlightExplorerTable('data-avg');
 
   // Trigger auto sync on startup
   runAutoSync();

@@ -45,6 +45,7 @@
         <a href="#videos" class="nav-link"><i class="fa-solid fa-video"></i> Videos</a>
         <a href="#playground" class="nav-link"><i class="fa-solid fa-terminal"></i> Playground</a>
         <a href="#visualizer" class="nav-link"><i class="fa-solid fa-brain"></i> Visualizer</a>
+        <a href="#data-forge" class="nav-link"><i class="fa-solid fa-chart-simple"></i> Data Forge</a>
         <a href="#quiz" class="nav-link"><i class="fa-solid fa-award"></i> The Forge Quiz</a>
         <a href="#free-access" class="nav-link"><i class="fa-solid fa-hand-holding-heart"></i> Free Access</a>
       </nav>
@@ -457,6 +458,155 @@ print(f"Squared items: {squared}")
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Data Forge (Data Analysis) Section -->
+    <section class="data-forge-section" id="data-forge">
+      <div class="section-header">
+        <span class="section-pre">Data Forge</span>
+        <h2 class="section-title">Interactive Data Analysis Hub</h2>
+        <p class="section-desc">Master data science fundamentals using pure Python. Clean noise, extract statistics, and build dynamic SVG chart visualizations.</p>
+      </div>
+
+      <!-- Navigation Tabs for Sandbox vs Study Guides -->
+      <div class="data-forge-tabs">
+        <button class="tab-btn active" id="data-tab-sandbox"><i class="fa-solid fa-flask"></i> Interactive Sandbox</button>
+        <button class="tab-btn" id="data-tab-guide-basics"><i class="fa-solid fa-book"></i> Data Science Guide</button>
+        <button class="tab-btn" id="data-tab-guide-python"><i class="fa-solid fa-book-open"></i> Python Analysis Guide</button>
+      </div>
+
+      <!-- TAB PANEL 1: Sandbox Interface (Default) -->
+      <div class="data-forge-container" id="data-panel-sandbox">
+        <!-- Left Column: Dataset Explorer -->
+        <div class="data-explorer-pane">
+          <div class="pane-header">
+            <span><i class="fa-solid fa-table"></i> Dataset Explorer (Monthly Sales)</span>
+            <span class="table-size-indicator" style="font-size:0.75rem; color:var(--text-muted);">12 rows x 4 columns</span>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" id="sales-data-table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Region</th>
+                  <th>Units Sold</th>
+                  <th>Revenue ($)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-region="North"><td>Jan</td><td>North</td><td>450</td><td>$12,000</td></tr>
+                <tr data-region="South"><td>Jan</td><td>South</td><td>600</td><td>$15,000</td></tr>
+                <tr data-region="North"><td>Feb</td><td>North</td><td>500</td><td>$14,000</td></tr>
+                <tr data-region="South"><td>Feb</td><td>South</td><td>720</td><td>$18,000</td></tr>
+                <tr data-region="North"><td>Mar</td><td>North</td><td>580</td><td>$16,500</td></tr>
+                <tr data-region="South"><td>Mar</td><td>South</td><td>800</td><td>$20,000</td></tr>
+                <tr data-region="North"><td>Apr</td><td>North</td><td>620</td><td>$17,500</td></tr>
+                <tr data-region="South"><td>Apr</td><td>South</td><td>850</td><td>$22,000</td></tr>
+                <tr data-region="North"><td>May</td><td>North</td><td>700</td><td>$19,500</td></tr>
+                <tr data-region="South"><td>May</td><td>South</td><td>900</td><td>$24,000</td></tr>
+                <tr data-region="North"><td>Jun</td><td>North</td><td>850</td><td>$24,000</td></tr>
+                <tr data-region="South"><td>Jun</td><td>South</td><td>1050</td><td>$29,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Right Column: Code Editor & Live Chart -->
+        <div class="data-analysis-workspace">
+          <!-- Code Editor Pane -->
+          <div class="editor-pane" style="height: 320px;">
+            <div class="pane-header">
+              <div class="scenario-selector-container">
+                <label for="data-scenario-select"><i class="fa-solid fa-code"></i> Template:</label>
+                <select id="data-scenario-select">
+                  <option value="data-avg">Calculate Revenue Averages</option>
+                  <option value="data-filter">Filter & Plot Region Sales</option>
+                  <option value="data-growth">Compute Cumulative Growth</option>
+                  <option value="data-custom">-- Write Custom Analyzer --</option>
+                </select>
+              </div>
+              <div class="editor-controls">
+                <button class="btn btn-mint btn-sm" id="run-data-code-btn" disabled><i class="fa-solid fa-play"></i> Run Analysis</button>
+                <button class="btn btn-secondary btn-sm" id="reset-data-code-btn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              </div>
+            </div>
+            <div class="editor-workspace" style="height: calc(100% - 50px);">
+              <div class="line-numbers" id="data-line-numbers">
+                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+              </div>
+              <textarea class="code-textarea fira-code" id="data-code-textarea" spellcheck="false" autocomplete="off" style="height: 100%; width: 100%; border: none; outline: none; background: transparent; color: var(--text-primary); font-family: var(--font-mono); font-size: 0.9rem; resize: none; padding: 0 10px; line-height: 1.5;"></textarea>
+            </div>
+          </div>
+
+          <!-- Live Chart Pane -->
+          <div class="chart-pane">
+            <div class="pane-header">
+              <span><i class="fa-solid fa-chart-simple"></i> Live Visual Chart Canvas</span>
+              <div class="controls-group">
+                <button class="chart-type-btn active" data-type="bar"><i class="fa-solid fa-chart-bar"></i> Bar</button>
+                <button class="chart-type-btn" data-type="line"><i class="fa-solid fa-chart-line"></i> Line</button>
+              </div>
+            </div>
+            <div class="chart-workspace">
+              <!-- SVG Canvas -->
+              <svg id="analysis-chart-canvas" width="100%" height="280" viewBox="0 0 600 280">
+                <!-- Grid Lines -->
+                <g class="chart-grid" stroke="rgba(255,255,255,0.05)" stroke-width="1">
+                  <line x1="60" y1="30" x2="570" y2="30" />
+                  <line x1="60" y1="85" x2="570" y2="85" />
+                  <line x1="60" y1="140" x2="570" y2="140" />
+                  <line x1="60" y1="195" x2="570" y2="195" />
+                  <line x1="60" y1="250" x2="570" y2="250" />
+                </g>
+                <g class="chart-axes" stroke="var(--text-muted)" stroke-width="1.5">
+                  <line x1="60" y1="250" x2="570" y2="250" />
+                  <line x1="60" y1="30" x2="60" y2="250" />
+                </g>
+                <text x="315" y="140" fill="var(--text-secondary)" text-anchor="middle" font-size="14" font-family="var(--font-sans)">
+                  Click 'Run Analysis' to process dataset and plot live chart.
+                </text>
+              </svg>
+              <!-- Chart Tooltip -->
+              <div id="data-chart-tooltip" class="chart-tooltip hidden"></div>
+            </div>
+
+            <!-- Terminal Output console -->
+            <div class="data-terminal-pane" style="border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-glass);">
+              <div class="pane-header" style="background: rgba(0, 0, 0, 0.2); padding: 8px 12px; font-size: 0.8rem; display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-glass);">
+                <span><i class="fa-solid fa-terminal"></i> Console Output</span>
+                <button class="clear-terminal" id="clear-data-terminal-btn" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;"><i class="fa-solid fa-trash-can"></i> Clear</button>
+              </div>
+              <div class="terminal-body" id="data-terminal-body" style="height: 100px; font-family: var(--font-mono); font-size: 0.85rem; padding: 12px; overflow-y: auto; background: var(--text-editor-bg); color: var(--text-primary);">
+                <div class="terminal-output-line output-system">&gt;&gt;&gt; Ready to execute scripts. stdout is monitored.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 2: Study Guide Basics (Initially Hidden) -->
+      <div class="study-guide-container hidden" id="data-panel-guide-basics">
+        <div class="study-guide-header">
+          <h3>Foundations of Data Science</h3>
+          <a class="action-btn-mini btn btn-secondary btn-sm" id="download-guide-basics-btn" href="notes/data_basics_notes.md" download><i class="fa-solid fa-download"></i> Download Notes (.md)</a>
+        </div>
+        <div class="study-guide-content" id="data-guide-basics-content">
+          <!-- Injected via JS markdown parser -->
+          <div style="text-align: center; padding: 40px; color: var(--text-secondary);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Study Guide...</div>
+        </div>
+      </div>
+
+      <!-- TAB PANEL 3: Study Guide Python (Initially Hidden) -->
+      <div class="study-guide-container hidden" id="data-panel-guide-python">
+        <div class="study-guide-header">
+          <h3>Data Aggregations with Pure Python</h3>
+          <a class="action-btn-mini btn btn-secondary btn-sm" id="download-guide-python-btn" href="notes/data_python_notes.md" download><i class="fa-solid fa-download"></i> Download Notes (.md)</a>
+        </div>
+        <div class="study-guide-content" id="data-guide-python-content">
+          <!-- Injected via JS markdown parser -->
+          <div style="text-align: center; padding: 40px; color: var(--text-secondary);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading Study Guide...</div>
         </div>
       </div>
     </section>
