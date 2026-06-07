@@ -576,7 +576,10 @@ document.addEventListener('DOMContentLoaded', () => {
     'json-parser': `import json\n\n# Real scenario: Parsing JSON data response\nraw_json = '{"user": "Alice", "role": "admin", "permissions": ["read", "write"]}'\ndata = json.loads(raw_json)\n\nprint(f"User: {data.get('user')}")\nprint(f"Is Admin: {data.get('role') == 'admin'}")\nprint(f"Permissions: {', '.join(data.get('permissions', []))}")`,
     'log-parser': `# Real scenario: Extracting information from server logs\nlogs = """\n2026-06-07 10:00:01 INFO Connection established.\\n2026-06-07 10:05:23 WARNING High memory consumption.\\n2026-06-07 10:06:12 ERROR Database connection timed out.\\n2026-06-07 10:09:12 ERROR Authentication failed.\\n"""\n\nprint("--- Extracted Errors ---")\nfor line in logs.strip().split('\\\\n'):\n    if "ERROR" in line:\n        parts = line.split(" ERROR ")\n        print(f"[CRITICAL ALERT] Time: {parts[0].strip()} | Message: {parts[1].strip()}")`,
     'data-pipeline': `# Real scenario: Aggregating sales metrics data\ntransactions = [\n    {"item": "Keyboard", "price": 85.00, "category": "Electronics"},\n    {"item": "Notebook", "price": 4.50, "category": "Stationery"},\n    {"item": "Monitor", "price": 250.00, "category": "Electronics"},\n    {"item": "Pen Pack", "price": 8.00, "category": "Stationery"},\n    {"item": "Mouse", "price": 45.00, "category": "Electronics"}\n]\n\nelectronics = [t for t in transactions if t["category"] == "Electronics"]\nprices = [t["price"] for t in electronics]\ntotal_sales = sum(prices)\n\nprint(f"Electronics items found: {len(electronics)}")\nprint(f"Total Electronics sales value: \${total_sales:.2f}")\nprint(f"Average Electronics price: \${total_sales / len(prices):.2f}")`,
-    memoize: `import time\n\n# Real scenario: Memoization caching decorator\ndef memoize(func):\n    cache = {}\n    def wrapper(n):\n        if n not in cache:\n            cache[n] = func(n)\n        return cache[n]\n    return wrapper\n\n@memoize\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nstart = time.perf_counter()\nres = fibonacci(32)\nend = time.perf_counter()\n\nprint(f"Fibonacci(32) = {res}")\nprint(f"Time Taken: {(end - start) * 1000:.3f} ms")`
+    memoize: `import time\n\n# Real scenario: Memoization caching decorator\ndef memoize(func):\n    cache = {}\n    def wrapper(n):\n        if n not in cache:\n            cache[n] = func(n)\n        return cache[n]\n    return wrapper\n\n@memoize\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nstart = time.perf_counter()\nres = fibonacci(32)\nend = time.perf_counter()\n\nprint(f"Fibonacci(32) = {res}")\nprint(f"Time Taken: {(end - start) * 1000:.3f} ms")`,
+    'regex-validator': `# Scenario 11: Regex Email and URL Validator\n# Demonstrates pattern matching using Python's 're' module\n\nimport re\n\n# 1. Compile regex patterns\nemail_pattern = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")\nurl_pattern = re.compile(r"^https?://[a-zA-Z0-9.-]+(?::[0-9]+)?(?:/[a-zA-Z0-9./?=&_-]*)?$")\n\nemails = ["user@example.com", "invalid-email@com", "alice.bob+tag@domain.org"]\nurls = ["https://pyforge.org/learn", "http://localhost:8080", "www.google.com"]\n\nprint("--- Email Verification Results ---")\nfor email in emails:\n    status = "VALID" if email_pattern.match(email) else "INVALID"\n    print(f"{email:<25} -> {status}")\n\nprint("\\n--- URL Verification Results ---")\nfor url in urls:\n    status = "VALID" if url_pattern.match(url) else "INVALID (Missing protocol)"\n    print(f"{url:<26} -> {status}")`,
+    'bst-tree': `# Scenario 12: Binary Search Tree (BST) Node Operations\n# Implements insertions and inorder traversal algorithms in Python\n\nclass Node:\n    def __init__(self, key):\n        self.left = None\n        self.right = None\n        self.val = key\n\ndef insert(root, key):\n    if root is None:\n        return Node(key)\n    else:\n        if root.val < key:\n            root.right = insert(root.right, key)\n        else:\n            root.left = insert(root.left, key)\n    return root\n\ndef inorder(root, path):\n    if root:\n        inorder(root.left, path)\n        path.append(str(root.val))\n        inorder(root.right, path)\n\ndef search(root, key):\n    if root is None or root.val == key:\n        return root\n    if root.val < key:\n        return search(root.right, key)\n    return search(root.left, key)\n\n# Create tree and insert values\nprint("Inserting values: 50, 30, 70, 20, 40, 60, 80")\nr = Node(50)\nfor val in [30, 70, 20, 40, 60, 80]:\n    r = insert(r, val)\n\npath = []\ninorder(r, path)\nprint("\\nInorder Traversal (Sorted order):")\nprint(" -> ".join(path))\n\nprint(f"\\nSearching for 60: {'Found!' if search(r, 60) else 'Not Found'}")\nprint(f"Searching for 90: {'Found!' if search(r, 90) else 'Not Found'}")`,
+    'jwt-generator': `# Scenario 13: JWT Token Generator & Verification Simulator\n# Simulates encoding and signing JWT structures in pure Python\n\nimport json\nimport base64\nimport hashlib\nimport hmac\n\ndef base64url_encode(data_bytes):\n    return base64.urlsafe_b64encode(data_bytes).replace(b"=", b"").decode("utf-8")\n\ndef create_token(header, payload, secret):\n    h_encoded = base64url_encode(json.dumps(header).encode("utf-8"))\n    p_encoded = base64url_encode(json.dumps(payload).encode("utf-8"))\n    signature_base = f"{h_encoded}.{p_encoded}".encode("utf-8")\n    signature = hmac.new(secret.encode("utf-8"), signature_base, hashlib.sha256).digest()\n    sig_encoded = base64url_encode(signature)\n    return f"{h_encoded}.{p_encoded}.{sig_encoded}"\n\ndef verify_token(token, secret):\n    parts = token.split(".")\n    if len(parts) != 3:\n        return False, None, None\n    h_encoded, p_encoded, sig_encoded = parts\n    signature_base = f"{h_encoded}.{p_encoded}".encode("utf-8")\n    expected_sig = hmac.new(secret.encode("utf-8"), signature_base, hashlib.sha256).digest()\n    expected_sig_encoded = base64url_encode(expected_sig)\n    is_valid = hmac.compare_digest(sig_encoded, expected_sig_encoded)\n    header = json.loads(base64.urlsafe_b64decode(h_encoded + "==").decode("utf-8"))\n    payload = json.loads(base64.urlsafe_b64decode(p_encoded + "==").decode("utf-8"))\n    return is_valid, header, payload\n\nsecret_key = \"pyforge_super_secure_key\"\nheader = {\"alg\": \"HS256\", \"typ\": \"JWT\"}\npayload = {\"user_id\": 1024, \"exp\": 1780000000, \"role\": \"student\"}\n\nprint(\"--- JWT Token Generation Simulator ---\\")\nprint(f\"Header: {json.dumps(header)}\")\nprint(f\"Payload: {json.dumps(payload)}\")\ntoken = create_token(header, payload, secret_key)\nprint(f\"\\nGenerated JWT Token (Encoded):\\n{token}\")\nprint(\"\\n--- Verification Output ---\")\nis_valid, h_decoded, p_decoded = verify_token(token, secret_key)\nprint(f\"Decoded Header: {h_decoded}\")\nprint(f\"Decoded Payload: {p_decoded}\")\nprint(f\"Verification Status: {'Token signature is VALID!' if is_valid else 'INVALID'}\")`
   };
 
   const codeTextarea = document.getElementById('code-textarea');
@@ -679,6 +682,42 @@ sys.stderr = io.StringIO()
   }
 
   function executePythonCodeFallback(code) {
+    const val = scenarioSelect.value;
+    if (val !== 'custom') {
+      let mockStdout = "";
+      if (val === 'intro') {
+        mockStdout = "Hello, PyForge Learner!\nIndentations define blocks!";
+      } else if (val === 'files') {
+        mockStdout = "Created in the PyForge WASM Sandbox!";
+      } else if (val === 'libraries') {
+        mockStdout = "Random number is: 42\nIts square root is: 6.48";
+      } else if (val === 'vars') {
+        mockStdout = "x is: 99\ny is: 42";
+      } else if (val === 'comprehension') {
+        mockStdout = "Evens squared list: [4, 16]";
+      } else if (val === 'class-oop') {
+        mockStdout = "Member Archimedes has 250 XP!";
+      } else if (val === 'decorator-timer') {
+        mockStdout = "[Decorator] Intercepting execution...\nExecuting core function launch.\n[Decorator] Execution completed.";
+      } else if (val === 'json-parser') {
+        mockStdout = "User: Alice\nIs Admin: true\nPermissions: read, write";
+      } else if (val === 'log-parser') {
+        mockStdout = "--- Extracted Errors ---\n[CRITICAL ALERT] Time: 2026-06-07 10:06:12 | Message: Database connection timed out.\n[CRITICAL ALERT] Time: 2026-06-07 10:09:12 | Message: Authentication failed.";
+      } else if (val === 'data-pipeline') {
+        mockStdout = "Electronics items found: 3\nTotal Electronics sales value: $380.00\nAverage Electronics price: $126.67";
+      } else if (val === 'memoize') {
+        mockStdout = "Fibonacci(32) = 2178309\nTime Taken: 0.185 ms";
+      } else if (val === 'regex-validator') {
+        mockStdout = "--- Email Verification Results ---\nuser@example.com          -> VALID\ninvalid-email@com         -> INVALID\nalice.bob+tag@domain.org  -> VALID\n\n--- URL Verification Results ---\nhttps://pyforge.org/learn  -> VALID\nhttp://localhost:8080      -> VALID\nwww.google.com             -> INVALID (Missing protocol)";
+      } else if (val === 'bst-tree') {
+        mockStdout = "Inserting values: 50, 30, 70, 20, 40, 60, 80\n\nInorder Traversal (Sorted order):\n20 -> 30 -> 40 -> 50 -> 60 -> 70 -> 80\n\nSearching for 60: Found!\nSearching for 90: Not Found";
+      } else if (val === 'jwt-generator') {
+        mockStdout = "--- JWT Token Generation Simulator ---\nHeader: {\"alg\": \"HS256\", \"typ\": \"JWT\"}\nPayload: {\"user_id\": 1024, \"exp\": 1780000000, \"role\": \"student\"}\n\nGenerated JWT Token (Encoded):\neyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMDI0LCJleHAiOjE3ODAwMDAwMDAsInJvbGUiOiJzdHVkZW50In0.mock_signature_db647e3a59\n\n--- Verification Output ---\nDecoded Header: {'alg': 'HS256', 'typ': 'JWT'}\nDecoded Payload: {'user_id': 1024, 'exp': 1780000000, 'role': 'student'}\nVerification Status: Token signature is VALID!";
+      }
+      logTerminal(mockStdout, 'val');
+      logTerminal('\nExecution completed successfully (Offline Fallback).', 'success');
+      return;
+    }
     const lines = code.split('\n');
     let variables = {};
     let outputLines = [];
@@ -1481,8 +1520,8 @@ print(f"[[ {json.dumps(chart_data)} ]]")`,
 # 1. Filter records for North region
 north_sales = [row for row in sales_data if row["region"] == "North"]
 
-# 2. Sort chronologically (Jan -> Jun)
-months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+# 2. Sort chronologically (Jan -> Dec)
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
 north_sales.sort(key=lambda x: months_order.get(x["month"], 0))
 
 # 3. Print monthly statistics
@@ -1514,7 +1553,7 @@ for row in sales_data:
     monthly_revenue[month] = monthly_revenue.get(month, 0) + rev
 
 # 2. Sort months chronologically
-months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
 sorted_months = sorted(monthly_revenue.keys(), key=lambda m: months_order.get(m, 0))
 
 # 3. Calculate cumulative revenue and growth rates
@@ -1625,8 +1664,8 @@ for region, data in region_kpis.items():
 import json
 print(f"[[ {json.dumps(chart_data)} ]]")`,
 
-    'data-forecast': `# Scenario 6: Moving Average Trend Forecasting (July Projection)
-# Computes store-wide monthly revenue and forecasts July sales
+    'data-forecast': `# Scenario 6: Moving Average Trend Forecasting (January Projection)
+# Computes store-wide monthly revenue and forecasts January sales
 
 # 1. Group store-wide sales by month
 monthly_revenue = {}
@@ -1635,23 +1674,90 @@ for row in sales_data:
     monthly_revenue[month] = monthly_revenue.get(month, 0) + row["revenue"]
 
 # 2. Sort months chronologically
-months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
 sorted_months = sorted(monthly_revenue.keys(), key=lambda m: months_order.get(m, 0))
 
-# 3. Simple 2-Month Moving Average Forecast for July
-# Forecast July = (May + June) / 2
+# 3. Simple 2-Month Moving Average Forecast for January
+# Forecast January = (November + December) / 2
 last_two = [monthly_revenue[m] for m in sorted_months[-2:]]
 july_forecast = sum(last_two) / 2
 
-print("--- Monthly Revenue & July Forecast ---")
+print("--- Monthly Revenue & January Forecast ---")
 plot_data = []
 for month in sorted_months:
     rev = monthly_revenue[month]
     print(f"{month} Revenue: ${rev:,.2f}")
     plot_data.append({"label": month, "value": rev})
 
-print(f"Projected July Revenue: ${july_forecast:,.2f} (Based on 2-Mo Moving Avg)")
-plot_data.append({"label": "Jul (Proj)", "value": july_forecast})
+print(f"Projected January Revenue: ${july_forecast:,.2f} (Based on 2-Mo Moving Avg)")
+plot_data.append({"label": "Jan (Proj)", "value": july_forecast})
+
+# Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(plot_data)} ]]")`,
+
+    'data-category': `# Scenario 7: Product Category Profitability
+# Aggregates revenue and units sold by product category
+
+cat_stats = {}
+
+for row in sales_data:
+    cat = row["category"]
+    rev = row["revenue"]
+    units = row["units"]
+    
+    if cat not in cat_stats:
+        cat_stats[cat] = {"revenue": 0, "units": 0}
+        
+    cat_stats[cat]["revenue"] += rev
+    cat_stats[cat]["units"] += units
+
+print("--- Product Category Sales Analysis ---")
+plot_data = []
+for cat, stats in cat_stats.items():
+    rev_per_unit = stats["revenue"] / stats["units"]
+    print(f"Category: {cat:<10} | Revenue: \${stats['revenue']:,} | Units: {stats['units']} | Avg Price: \${rev_per_unit:.2f}")
+    plot_data.append({
+        "label": cat,
+        "value": stats["revenue"]
+    })
+
+# Output payload for dynamic SVG charting
+import json
+print(f"[[ {json.dumps(plot_data)} ]]")`,
+
+    'data-quarter': `# Scenario 8: Quarterly Trend Summary
+# Groups sales into quarters and analyzes performance growth
+
+quarters_map = {
+    "Jan": "Q1", "Feb": "Q1", "Mar": "Q1",
+    "Apr": "Q2", "May": "Q2", "Jun": "Q2",
+    "Jul": "Q3", "Aug": "Q3", "Sep": "Q3",
+    "Oct": "Q4", "Nov": "Q4", "Dec": "Q4"
+}
+
+quarter_rev = {}
+for row in sales_data:
+    qtr = quarters_map.get(row["month"], "Other")
+    quarter_rev[qtr] = quarter_rev.get(qtr, 0) + row["revenue"]
+
+print("--- Quarterly Revenue Trend Analysis ---")
+plot_data = []
+sorted_quarters = sorted(quarter_rev.keys())
+prev_rev = None
+for qtr in sorted_quarters:
+    rev = quarter_rev[qtr]
+    if prev_rev is not None:
+        growth = ((rev - prev_rev) / prev_rev) * 100
+        growth_str = f"{growth:+.1f}% QoQ"
+    else:
+        growth_str = "Baseline"
+    print(f"Quarter: {qtr} | Total Revenue: \${rev:,.2f} ({growth_str})")
+    prev_rev = rev
+    plot_data.append({
+        "label": qtr,
+        "value": rev
+    })
 
 # Output payload for dynamic SVG charting
 import json
@@ -1668,7 +1774,7 @@ monthly_units = {}
 for r in sales_data:
     monthly_units[r['month']] = monthly_units.get(r['month'], 0) + r['units']
 
-months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6}
+months_order = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12}
 sorted_months = sorted(monthly_units.keys(), key=lambda m: months_order.get(m, 0))
 
 payload = [{"label": m, "value": monthly_units[m]} for m in sorted_months]
@@ -1971,13 +2077,13 @@ print(f"[[ {json_payload} ]]")
       rows.forEach(r => {
         if (r.dataset.region === 'North') r.classList.add('highlighted');
       });
-    } else if (scenario === 'data-avg' || scenario === 'data-kpi' || scenario === 'data-forecast') {
+    } else if (scenario === 'data-avg' || scenario === 'data-kpi' || scenario === 'data-forecast' || scenario === 'data-category' || scenario === 'data-quarter') {
       rows.forEach(r => r.classList.add('highlighted'));
     } else if (scenario === 'data-outliers') {
       rows.forEach(r => {
         const month = r.cells[0].textContent;
         const region = r.cells[1].textContent;
-        if (month === 'Jun' && region === 'South') {
+        if (month === 'Dec' && region === 'South') {
           r.classList.add('highlighted');
         }
       });
@@ -2042,18 +2148,30 @@ print(f"[[ {json_payload} ]]")
     // Inject the mock sales data before compiling user script
     const datasetInjection = `
 sales_data = [
-    {"month": "Jan", "region": "North", "units": 450, "revenue": 12000},
-    {"month": "Jan", "region": "South", "units": 600, "revenue": 15000},
-    {"month": "Feb", "region": "North", "units": 500, "revenue": 14000},
-    {"month": "Feb", "region": "South", "units": 720, "revenue": 18000},
-    {"month": "Mar", "region": "North", "units": 580, "revenue": 16500},
-    {"month": "Mar", "region": "South", "units": 800, "revenue": 20000},
-    {"month": "Apr", "region": "North", "units": 620, "revenue": 17500},
-    {"month": "Apr", "region": "South", "units": 850, "revenue": 22000},
-    {"month": "May", "region": "North", "units": 700, "revenue": 19500},
-    {"month": "May", "region": "South", "units": 900, "revenue": 24000},
-    {"month": "Jun", "region": "North", "units": 850, "revenue": 24000},
-    {"month": "Jun", "region": "South", "units": 1050, "revenue": 29000}
+    {"month": "Jan", "region": "North", "category": "Software", "units": 450, "revenue": 12000, "discount": "No"},
+    {"month": "Jan", "region": "South", "category": "Hardware", "units": 600, "revenue": 15000, "discount": "Yes"},
+    {"month": "Feb", "region": "North", "category": "Software", "units": 500, "revenue": 14000, "discount": "No"},
+    {"month": "Feb", "region": "South", "category": "Hardware", "units": 720, "revenue": 18000, "discount": "No"},
+    {"month": "Mar", "region": "North", "category": "Services", "units": 580, "revenue": 16500, "discount": "Yes"},
+    {"month": "Mar", "region": "South", "category": "Software", "units": 800, "revenue": 20000, "discount": "No"},
+    {"month": "Apr", "region": "North", "category": "Hardware", "units": 620, "revenue": 17500, "discount": "No"},
+    {"month": "Apr", "region": "South", "category": "Services", "units": 850, "revenue": 22000, "discount": "Yes"},
+    {"month": "May", "region": "North", "category": "Software", "units": 700, "revenue": 19500, "discount": "No"},
+    {"month": "May", "region": "South", "category": "Hardware", "units": 900, "revenue": 24000, "discount": "Yes"},
+    {"month": "Jun", "region": "North", "category": "Services", "units": 850, "revenue": 24000, "discount": "No"},
+    {"month": "Jun", "region": "South", "category": "Software", "units": 1050, "revenue": 29000, "discount": "Yes"},
+    {"month": "Jul", "region": "North", "category": "Software", "units": 800, "revenue": 23000, "discount": "Yes"},
+    {"month": "Jul", "region": "South", "category": "Hardware", "units": 1000, "revenue": 28000, "discount": "No"},
+    {"month": "Aug", "region": "North", "category": "Software", "units": 750, "revenue": 21500, "discount": "No"},
+    {"month": "Aug", "region": "South", "category": "Hardware", "units": 950, "revenue": 26500, "discount": "Yes"},
+    {"month": "Sep", "region": "North", "category": "Services", "units": 880, "revenue": 25000, "discount": "Yes"},
+    {"month": "Sep", "region": "South", "category": "Software", "units": 1100, "revenue": 30500, "discount": "No"},
+    {"month": "Oct", "region": "North", "category": "Hardware", "units": 900, "revenue": 26000, "discount": "No"},
+    {"month": "Oct", "region": "South", "category": "Services", "units": 1200, "revenue": 33000, "discount": "Yes"},
+    {"month": "Nov", "region": "North", "category": "Software", "units": 950, "revenue": 27500, "discount": "Yes"},
+    {"month": "Nov", "region": "South", "category": "Hardware", "units": 1300, "revenue": 35500, "discount": "No"},
+    {"month": "Dec", "region": "North", "category": "Software", "units": 1100, "revenue": 32000, "discount": "Yes"},
+    {"month": "Dec", "region": "South", "category": "Services", "units": 1500, "revenue": 41000, "discount": "Yes"}
 ]
 `;
 
@@ -2083,17 +2201,21 @@ sys.stderr = io.StringIO()
       const val = dataScenarioSelect.value;
       let mockStdout = "";
       if (val === 'data-avg') {
-        mockStdout = "--- Region Sales Summary Averages ---\nRegion: North | Avg Revenue: $17,250.00 | Avg Units: 616.7\nRegion: South | Avg Revenue: $21,333.33 | Avg Units: 820.0\n[[ [{\"label\": \"North\", \"value\": 17250}, {\"label\": \"South\", \"value\": 21333.33}] ]]";
+        mockStdout = "--- Region Sales Summary Averages ---\nRegion: North | Avg Revenue: $21,541.67 | Avg Units: 756.7\nRegion: South | Avg Revenue: $26,875.00 | Avg Units: 997.5\n[[ [{\"label\": \"North\", \"value\": 21541.67}, {\"label\": \"South\", \"value\": 26875}] ]]";
       } else if (val === 'data-filter') {
-        mockStdout = "--- Monthly Revenue for North Region ---\nMonth: Jan | Revenue: $12,000 | Units Sold: 450\nMonth: Feb | Revenue: $14,000 | Units Sold: 500\nMonth: Mar | Revenue: $16,500 | Units Sold: 580\nMonth: Apr | Revenue: $17,500 | Units Sold: 620\nMonth: May | Revenue: $19,500 | Units Sold: 700\nMonth: Jun | Revenue: $24,000 | Units Sold: 850\n[[ [{\"label\": \"Jan\", \"value\": 12000}, {\"label\": \"Feb\", \"value\": 14000}, {\"label\": \"Mar\", \"value\": 16500}, {\"label\": \"Apr\", \"value\": 17500}, {\"label\": \"May\", \"value\": 19500}, {\"label\": \"Jun\", \"value\": 24000}] ]]";
+        mockStdout = "--- Monthly Revenue for North Region ---\nMonth: Jan | Revenue: $12,000 | Units Sold: 450\nMonth: Feb | Revenue: $14,000 | Units Sold: 500\nMonth: Mar | Revenue: $16,500 | Units Sold: 580\nMonth: Apr | Revenue: $17,500 | Units Sold: 620\nMonth: May | Revenue: $19,500 | Units Sold: 700\nMonth: Jun | Revenue: $24,000 | Units Sold: 850\nMonth: Jul | Revenue: $23,000 | Units Sold: 800\nMonth: Aug | Revenue: $21,500 | Units Sold: 750\nMonth: Sep | Revenue: $25,000 | Units Sold: 880\nMonth: Oct | Revenue: $26,000 | Units Sold: 900\nMonth: Nov | Revenue: $27,500 | Units Sold: 950\nMonth: Dec | Revenue: $32,000 | Units Sold: 1100\n[[ [{\"label\": \"Jan\", \"value\": 12000}, {\"label\": \"Feb\", \"value\": 14000}, {\"label\": \"Mar\", \"value\": 16500}, {\"label\": \"Apr\", \"value\": 17500}, {\"label\": \"May\", \"value\": 19500}, {\"label\": \"Jun\", \"value\": 24000}, {\"label\": \"Jul\", \"value\": 23000}, {\"label\": \"Aug\", \"value\": 21500}, {\"label\": \"Sep\", \"value\": 25000}, {\"label\": \"Oct\", \"value\": 26000}, {\"label\": \"Nov\", \"value\": 27500}, {\"label\": \"Dec\", \"value\": 32000}] ]]";
       } else if (val === 'data-growth') {
-        mockStdout = "--- Store-wide Cumulative Revenue & Growth ---\nMonth: Jan | Month Rev: $27,000.00 | Cum. Rev: $27,000.00 (Baseline)\nMonth: Feb | Month Rev: $32,000.00 | Cum. Rev: $59,000.00 (+18.5% MoM)\nMonth: Mar | Month Rev: $36,500.00 | Cum. Rev: $95,500.00 (+14.1% MoM)\nMonth: Apr | Month Rev: $39,500.00 | Cum. Rev: $135,000.00 (+8.2% MoM)\nMonth: May | Month Rev: $43,500.00 | Cum. Rev: $178,500.00 (+10.1% MoM)\nMonth: Jun | Month Rev: $53,000.00 | Cum. Rev: $231,500.00 (+21.8% MoM)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 59000}, {\"label\": \"Mar\", \"value\": 95500}, {\"label\": \"Apr\", \"value\": 135000}, {\"label\": \"May\", \"value\": 178500}, {\"label\": \"Jun\", \"value\": 231500}] ]]";
+        mockStdout = "--- Store-wide Cumulative Revenue & Growth ---\nMonth: Jan | Month Rev: $27,000.00 | Cum. Rev: $27,000.00 (Baseline)\nMonth: Feb | Month Rev: $32,000.00 | Cum. Rev: $59,000.00 (+18.5% MoM)\nMonth: Mar | Month Rev: $36,500.00 | Cum. Rev: $95,500.00 (+14.1% MoM)\nMonth: Apr | Month Rev: $39,500.00 | Cum. Rev: $135,000.00 (+8.2% MoM)\nMonth: May | Month Rev: $43,500.00 | Cum. Rev: $178,500.00 (+10.1% MoM)\nMonth: Jun | Month Rev: $53,000.00 | Cum. Rev: $231,500.00 (+21.8% MoM)\nMonth: Jul | Month Rev: $51,000.00 | Cum. Rev: $282,500.00 (-3.8% MoM)\nMonth: Aug | Month Rev: $48,000.00 | Cum. Rev: $330,500.00 (-5.9% MoM)\nMonth: Sep | Month Rev: $55,500.00 | Cum. Rev: $386,000.00 (+15.6% MoM)\nMonth: Oct | Month Rev: $59,000.00 | Cum. Rev: $445,000.00 (+6.3% MoM)\nMonth: Nov | Month Rev: $63,000.00 | Cum. Rev: $508,000.00 (+6.8% MoM)\nMonth: Dec | Month Rev: $73,000.00 | Cum. Rev: $581,000.00 (+15.9% MoM)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 59000}, {\"label\": \"Mar\", \"value\": 95500}, {\"label\": \"Apr\", \"value\": 135000}, {\"label\": \"May\", \"value\": 178500}, {\"label\": \"Jun\", \"value\": 231500}, {\"label\": \"Jul\", \"value\": 282500}, {\"label\": \"Aug\", \"value\": 330500}, {\"label\": \"Sep\", \"value\": 386000}, {\"label\": \"Oct\", \"value\": 445000}, {\"label\": \"Nov\", \"value\": 508000}, {\"label\": \"Dec\", \"value\": 581000}] ]]";
       } else if (val === 'data-outliers') {
-        mockStdout = "--- Dataset Statistics ---\nMean Revenue: $19,291.67\nStd Deviation: $4,643.36\n--------------------------\n--- Outlier Detection Log ---\nJan (North): $12,000 | Dist: $7,291.7 | NORMAL\nJan (South): $15,000 | Dist: $4,291.7 | NORMAL\nFeb (North): $14,000 | Dist: $5,291.7 | NORMAL\nFeb (South): $18,000 | Dist: $1,291.7 | NORMAL\nMar (North): $16,500 | Dist: $2,791.7 | NORMAL\nMar (South): $20,000 | Dist: $708.3 | NORMAL\nApr (North): $17,500 | Dist: $1,791.7 | NORMAL\nApr (South): $22,000 | Dist: $2,708.3 | NORMAL\nMay (North): $19,500 | Dist: $208.3 | NORMAL\nMay (South): $24,000 | Dist: $4,708.3 | NORMAL\nJun (North): $24,000 | Dist: $4,708.3 | NORMAL\nJun (South): $29,000 | Dist: $9,708.3 | OUTLIER\n[[ [{\"label\": \"Jan-N\", \"value\": 12000}, {\"label\": \"Jan-S\", \"value\": 15000}, {\"label\": \"Feb-N\", \"value\": 14000}, {\"label\": \"Feb-S\", \"value\": 18000}, {\"label\": \"Mar-N\", \"value\": 16500}, {\"label\": \"Mar-S\", \"value\": 20000}, {\"label\": \"Apr-N\", \"value\": 17500}, {\"label\": \"Apr-S\", \"value\": 22000}, {\"label\": \"May-N\", \"value\": 19500}, {\"label\": \"May-S\", \"value\": 24000}, {\"label\": \"Jun-N\", \"value\": 24000}, {\"label\": \"Jun-S\", \"value\": 29000}] ]]";
+        mockStdout = "--- Dataset Statistics ---\nMean Revenue: $24,208.33\nStd Deviation: $7,008.80\n--------------------------\n--- Outlier Detection Log ---\nJan (North): $12,000 | Dist: $12,208.3 | NORMAL\nJan (South): $15,000 | Dist: $9,208.3 | NORMAL\nFeb (North): $14,000 | Dist: $10,208.3 | NORMAL\nFeb (South): $18,000 | Dist: $6,208.3 | NORMAL\nMar (North): $16,500 | Dist: $7,708.3 | NORMAL\nMar (South): $20,000 | Dist: $4,208.3 | NORMAL\nApr (North): $17,500 | Dist: $6,708.3 | NORMAL\nApr (South): $22,000 | Dist: $2,208.3 | NORMAL\nMay (North): $19,500 | Dist: $4,708.3 | NORMAL\nMay (South): $24,000 | Dist: $208.3 | NORMAL\nJun (North): $24,000 | Dist: $208.3 | NORMAL\nJun (South): $29,000 | Dist: $4,791.7 | NORMAL\nJul (North): $23,000 | Dist: $1,208.3 | NORMAL\nJul (South): $28,000 | Dist: $3,791.7 | NORMAL\nAug (North): $21,500 | Dist: $2,708.3 | NORMAL\nAug (South): $26,500 | Dist: $2,291.7 | NORMAL\nSep (North): $25,000 | Dist: $791.7 | NORMAL\nSep (South): $30,500 | Dist: $6,291.7 | NORMAL\nOct (North): $26,000 | Dist: $1,791.7 | NORMAL\nOct (South): $33,000 | Dist: $8,791.7 | NORMAL\nNov (North): $27,500 | Dist: $3,291.7 | NORMAL\nNov (South): $35,500 | Dist: $11,291.7 | NORMAL\nDec (North): $32,000 | Dist: $7,791.7 | NORMAL\nDec (South): $41,000 | Dist: $16,791.7 | OUTLIER\n[[ [{\"label\": \"Jan-N\", \"value\": 12000}, {\"label\": \"Jan-S\", \"value\": 15000}, {\"label\": \"Feb-N\", \"value\": 14000}, {\"label\": \"Feb-S\", \"value\": 18000}, {\"label\": \"Mar-N\", \"value\": 16500}, {\"label\": \"Mar-S\", \"value\": 20000}, {\"label\": \"Apr-N\", \"value\": 17500}, {\"label\": \"Apr-S\", \"value\": 22000}, {\"label\": \"May-N\", \"value\": 19500}, {\"label\": \"May-S\", \"value\": 24000}, {\"label\": \"Jun-N\", \"value\": 24000}, {\"label\": \"Jun-S\", \"value\": 29000}, {\"label\": \"Jul-N\", \"value\": 23000}, {\"label\": \"Jul-S\", \"value\": 28000}, {\"label\": \"Aug-N\", \"value\": 21500}, {\"label\": \"Aug-S\", \"value\": 26500}, {\"label\": \"Sep-N\", \"value\": 25000}, {\"label\": \"Sep-S\", \"value\": 30500}, {\"label\": \"Oct-N\", \"value\": 26000}, {\"label\": \"Oct-S\", \"value\": 33000}, {\"label\": \"Nov-N\", \"value\": 27500}, {\"label\": \"Nov-S\", \"value\": 35500}, {\"label\": \"Dec-N\", \"value\": 32000}, {\"label\": \"Dec-S\", \"value\": 41000}] ]]";
       } else if (val === 'data-kpi') {
-        mockStdout = "--- Region Sales Efficiency Analysis ---\nRegion: North\n  Total Revenue: $103,500\n  Total Units: 3,550\n  Efficiency (Revenue/Unit): $29.15\nRegion: South\n  Total Revenue: $128,000\n  Total Units: 4,970\n  Efficiency (Revenue/Unit): $25.75\n[[ [{\"label\": \"North\", \"value\": 29.15}, {\"label\": \"South\", \"value\": 25.75}] ]]";
+        mockStdout = "--- Region Sales Efficiency Analysis ---\nRegion: North\n  Total Revenue: $258,500\n  Total Units: 9,080\n  Efficiency (Revenue/Unit): $28.47\nRegion: South\n  Total Revenue: $322,500\n  Total Units: 11,970\n  Efficiency (Revenue/Unit): $26.94\n[[ [{\"label\": \"North\", \"value\": 28.47}, {\"label\": \"South\", \"value\": 26.94}] ]]";
       } else if (val === 'data-forecast') {
-        mockStdout = "--- Monthly Revenue & July Forecast ---\nJan Revenue: $27,000.00\nFeb Revenue: $32,000.00\nMar Revenue: $36,500.00\nApr Revenue: $39,500.00\nMay Revenue: $43,500.00\nJun Revenue: $53,000.00\nProjected July Revenue: $48,250.00 (Based on 2-Mo Moving Avg)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 32000}, {\"label\": \"Mar\", \"value\": 36500}, {\"label\": \"Apr\", \"value\": 39500}, {\"label\": \"May\", \"value\": 43500}, {\"label\": \"Jun\", \"value\": 53000}, {\"label\": \"Jul (Proj)\", \"value\": 48250}] ]]";
+        mockStdout = "--- Monthly Revenue & January Forecast ---\nJan Revenue: $27,000.00\nFeb Revenue: $32,000.00\nMar Revenue: $36,500.00\nApr Revenue: $39,500.00\nMay Revenue: $43,500.00\nJun Revenue: $53,000.00\nJul Revenue: $51,000.00\nAug Revenue: $48,000.00\nSep Revenue: $55,500.00\nOct Revenue: $59,000.00\nNov Revenue: $63,000.00\nDec Revenue: $73,000.00\nProjected January Revenue: $68,000.00 (Based on 2-Mo Moving Avg)\n[[ [{\"label\": \"Jan\", \"value\": 27000}, {\"label\": \"Feb\", \"value\": 32000}, {\"label\": \"Mar\", \"value\": 36500}, {\"label\": \"Apr\", \"value\": 39500}, {\"label\": \"May\", \"value\": 43500}, {\"label\": \"Jun\", \"value\": 53000}, {\"label\": \"Jul\", \"value\": 51000}, {\"label\": \"Aug\", \"value\": 48000}, {\"label\": \"Sep\", \"value\": 55500}, {\"label\": \"Oct\", \"value\": 59000}, {\"label\": \"Nov\", \"value\": 63000}, {\"label\": \"Dec\", \"value\": 73000}, {\"label\": \"Jan (Proj)\", \"value\": 68000}] ]]";
+      } else if (val === 'data-category') {
+        mockStdout = "--- Product Category Sales Analysis ---\nCategory: Software   | Revenue: $229,000 | Units: 8,200 | Avg Price: $27.93\nCategory: Hardware   | Revenue: $190,500 | Units: 6,990 | Avg Price: $27.25\nCategory: Services   | Revenue: $161,500 | Units: 5,860 | Avg Price: $27.56\n[[ [{\"label\": \"Software\", \"value\": 229000}, {\"label\": \"Hardware\", \"value\": 190500}, {\"label\": \"Services\", \"value\": 161500}] ]]";
+      } else if (val === 'data-quarter') {
+        mockStdout = "--- Quarterly Revenue Trend Analysis ---\nQuarter: Q1 | Total Revenue: $95,500.00 (Baseline)\nQuarter: Q2 | Total Revenue: $136,000.00 (+42.4% QoQ)\nQuarter: Q3 | Total Revenue: $154,500.00 (+13.6% QoQ)\nQuarter: Q4 | Total Revenue: $195,000.00 (+26.2% QoQ)\n[[ [{\"label\": \"Q1\", \"value\": 95500}, {\"label\": \"Q2\", \"value\": 136000}, {\"label\": \"Q3\", \"value\": 154500}, {\"label\": \"Q4\", \"value\": 195000}] ]]";
       } else {
         mockStdout = "Offline mode fallback: CPython core not resolved yet. Write code when connection is online.";
       }

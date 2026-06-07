@@ -358,6 +358,9 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
                 <option value="log-parser">Real Scenario: Log Extractor</option>
                 <option value="data-pipeline">Real Scenario: Data Aggregator</option>
                 <option value="memoize">Real Scenario: Caching Decorator</option>
+                <option value="regex-validator">Real Scenario: Regex Validator</option>
+                <option value="bst-tree">Real Scenario: Binary Search Tree</option>
+                <option value="jwt-generator">Real Scenario: JWT Token Generator</option>
               </select>
             </div>
             <!-- Sandbox Status Indicator Badge -->
@@ -491,23 +494,37 @@ print(f"Squared items: {squared}")
                 <tr>
                   <th>Month</th>
                   <th>Region</th>
+                  <th>Category</th>
                   <th>Units Sold</th>
                   <th>Revenue ($)</th>
+                  <th>Discount</th>
                 </tr>
               </thead>
               <tbody>
-                <tr data-region="North"><td>Jan</td><td>North</td><td>450</td><td>$12,000</td></tr>
-                <tr data-region="South"><td>Jan</td><td>South</td><td>600</td><td>$15,000</td></tr>
-                <tr data-region="North"><td>Feb</td><td>North</td><td>500</td><td>$14,000</td></tr>
-                <tr data-region="South"><td>Feb</td><td>South</td><td>720</td><td>$18,000</td></tr>
-                <tr data-region="North"><td>Mar</td><td>North</td><td>580</td><td>$16,500</td></tr>
-                <tr data-region="South"><td>Mar</td><td>South</td><td>800</td><td>$20,000</td></tr>
-                <tr data-region="North"><td>Apr</td><td>North</td><td>620</td><td>$17,500</td></tr>
-                <tr data-region="South"><td>Apr</td><td>South</td><td>850</td><td>$22,000</td></tr>
-                <tr data-region="North"><td>May</td><td>North</td><td>700</td><td>$19,500</td></tr>
-                <tr data-region="South"><td>May</td><td>South</td><td>900</td><td>$24,000</td></tr>
-                <tr data-region="North"><td>Jun</td><td>North</td><td>850</td><td>$24,000</td></tr>
-                <tr data-region="South"><td>Jun</td><td>South</td><td>1050</td><td>$29,000</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="No"><td>Jan</td><td>North</td><td>Software</td><td>450</td><td>$12,000</td><td>No</td></tr>
+                <tr data-region="South" data-category="Hardware" data-discount="Yes"><td>Jan</td><td>South</td><td>Hardware</td><td>600</td><td>$15,000</td><td>Yes</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="No"><td>Feb</td><td>North</td><td>Software</td><td>500</td><td>$14,000</td><td>No</td></tr>
+                <tr data-region="South" data-category="Hardware" data-discount="No"><td>Feb</td><td>South</td><td>Hardware</td><td>720</td><td>$18,000</td><td>No</td></tr>
+                <tr data-region="North" data-category="Services" data-discount="Yes"><td>Mar</td><td>North</td><td>Services</td><td>580</td><td>$16,500</td><td>Yes</td></tr>
+                <tr data-region="South" data-category="Software" data-discount="No"><td>Mar</td><td>South</td><td>Software</td><td>800</td><td>$20,000</td><td>No</td></tr>
+                <tr data-region="North" data-category="Hardware" data-discount="No"><td>Apr</td><td>North</td><td>Hardware</td><td>620</td><td>$17,500</td><td>No</td></tr>
+                <tr data-region="South" data-category="Services" data-discount="Yes"><td>Apr</td><td>South</td><td>Services</td><td>850</td><td>$22,000</td><td>Yes</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="No"><td>May</td><td>North</td><td>Software</td><td>700</td><td>$19,500</td><td>No</td></tr>
+                <tr data-region="South" data-category="Hardware" data-discount="Yes"><td>May</td><td>South</td><td>Hardware</td><td>900</td><td>$24,000</td><td>Yes</td></tr>
+                <tr data-region="North" data-category="Services" data-discount="No"><td>Jun</td><td>North</td><td>Services</td><td>850</td><td>$24,000</td><td>No</td></tr>
+                <tr data-region="South" data-category="Software" data-discount="Yes"><td>Jun</td><td>South</td><td>Software</td><td>1050</td><td>$29,000</td><td>Yes</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="Yes"><td>Jul</td><td>North</td><td>Software</td><td>800</td><td>$23,000</td><td>Yes</td></tr>
+                <tr data-region="South" data-category="Hardware" data-discount="No"><td>Jul</td><td>South</td><td>Hardware</td><td>1000</td><td>$28,000</td><td>No</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="No"><td>Aug</td><td>North</td><td>Software</td><td>750</td><td>$21,500</td><td>No</td></tr>
+                <tr data-region="South" data-category="Hardware" data-discount="Yes"><td>Aug</td><td>South</td><td>Hardware</td><td>950</td><td>$26,500</td><td>Yes</td></tr>
+                <tr data-region="North" data-category="Services" data-discount="Yes"><td>Sep</td><td>North</td><td>Services</td><td>880</td><td>$25,000</td><td>Yes</td></tr>
+                <tr data-region="South" data-category="Software" data-discount="No"><td>Sep</td><td>South</td><td>Software</td><td>1100</td><td>$30,500</td><td>No</td></tr>
+                <tr data-region="North" data-category="Hardware" data-discount="No"><td>Oct</td><td>North</td><td>Hardware</td><td>900</td><td>$26,000</td><td>No</td></tr>
+                <tr data-region="South" data-category="Services" data-discount="Yes"><td>Oct</td><td>South</td><td>Services</td><td>1200</td><td>$33,000</td><td>Yes</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="Yes"><td>Nov</td><td>North</td><td>Software</td><td>950</td><td>$27,500</td><td>Yes</td></tr>
+                <tr data-region="South" data-category="Hardware" data-discount="No"><td>Nov</td><td>South</td><td>Hardware</td><td>1300</td><td>$35,500</td><td>No</td></tr>
+                <tr data-region="North" data-category="Software" data-discount="Yes"><td>Dec</td><td>North</td><td>Software</td><td>1100</td><td>$32,000</td><td>Yes</td></tr>
+                <tr data-region="South" data-category="Services" data-discount="Yes"><td>Dec</td><td>South</td><td>Services</td><td>1500</td><td>$41,000</td><td>Yes</td></tr>
               </tbody>
             </table>
           </div>
@@ -527,6 +544,8 @@ print(f"Squared items: {squared}")
                   <option value="data-outliers">Statistical Outlier Detection</option>
                   <option value="data-kpi">Region Performance KPIs</option>
                   <option value="data-forecast">Moving Average Forecasting</option>
+                  <option value="data-category">Category Profitability</option>
+                  <option value="data-quarter">Quarterly Trend Summary</option>
                   <option value="data-custom">-- Write Custom Analyzer --</option>
                 </select>
               </div>
