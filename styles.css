@@ -8,25 +8,25 @@
   --font-mono: 'Fira Code', monospace;
 
   /* Colors */
-  --bg-primary: #0a0e17;
-  --bg-secondary: #111827;
-  --surface-glass: #111827;
-  --border-glass: rgba(255, 255, 255, 0.06);
-  --border-glass-glow: rgba(56, 189, 248, 0.15);
+  --bg-primary: #070a13;
+  --bg-secondary: #0c1220;
+  --surface-glass: #0e1728;
+  --border-glass: rgba(59, 130, 246, 0.12);
+  --border-glass-glow: rgba(56, 189, 248, 0.25);
 
   --accent-cyan: #38bdf8;
   --accent-cyan-rgb: 56, 189, 248;
-  --accent-gold: #fbbf24;
-  --accent-gold-rgb: 251, 191, 36;
-  --accent-pink: #fb7185;
-  --accent-pink-rgb: 251, 113, 133;
-  --accent-mint: #34d399;
-  --accent-mint-rgb: 52, 211, 153;
+  --accent-gold: #2563eb; /* Two-tone blue: Royal Blue */
+  --accent-gold-rgb: 37, 99, 235;
+  --accent-pink: #1d4ed8; /* Two-tone blue: Deep Blue */
+  --accent-pink-rgb: 29, 78, 216;
+  --accent-mint: #60a5fa; /* Two-tone blue: Soft Blue */
+  --accent-mint-rgb: 96, 165, 250;
   
-  --text-primary: #f8fafc;
+  --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --text-editor-bg: #0f172a;
+  --text-editor-bg: #090e1a;
 
   --transition-smooth: all 0.2s ease-in-out;
   --radius-lg: 12px;
@@ -141,8 +141,8 @@ body {
 }
 
 .btn-mint {
-  background: linear-gradient(135deg, var(--accent-mint) 0%, rgba(52, 211, 153, 0.8) 100%);
-  color: #042f1a;
+  background: linear-gradient(135deg, var(--accent-mint) 0%, rgba(96, 165, 250, 0.8) 100%);
+  color: #070a13;
   border: none;
 }
 
@@ -2269,6 +2269,240 @@ section {
 /* Responsiveness for Data Forge */
 @media (max-width: 1100px) {
   .data-forge-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   14. RESOURCES & UPDATES HUB STYLING
+   ========================================================================== */
+.resources-updates-section {
+  padding: 80px 24px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-glass);
+}
+
+.resources-updates-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  max-width: 1200px;
+  margin: 40px auto 0 auto;
+}
+
+.lifecycle-card, .downloadable-resources-card {
+  background: var(--surface-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: var(--transition-smooth);
+}
+
+.lifecycle-card:hover, .downloadable-resources-card:hover {
+  border-color: var(--border-glass-glow);
+  box-shadow: 0 8px 30px rgba(56, 189, 248, 0.05);
+}
+
+.card-header-with-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-badge-inline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.card-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+/* Lifecycle Timeline */
+.lifecycle-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.timeline-loading {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.timeline-item {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+}
+
+.timeline-version-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.timeline-version-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.timeline-version-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.timeline-version-badge.status-supported {
+  background: rgba(96, 165, 250, 0.15);
+  color: var(--accent-mint);
+}
+
+.timeline-version-badge.status-security {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--accent-gold);
+}
+
+.timeline-version-badge.status-eol {
+  background: rgba(29, 78, 216, 0.15);
+  color: var(--accent-pink);
+}
+
+.timeline-progress-bar-container {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.timeline-progress-bar {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.timeline-progress-bar.status-supported {
+  background: var(--accent-mint);
+}
+
+.timeline-progress-bar.status-security {
+  background: var(--accent-gold);
+}
+
+.timeline-progress-bar.status-eol {
+  background: var(--accent-pink);
+}
+
+.timeline-dates {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Feature Highlights */
+.updates-highlights h4 {
+  font-size: 1rem;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 8px;
+}
+
+.highlight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.highlight-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.version-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--accent-cyan);
+  padding: 2px 6px;
+  border-radius: 4px;
+  min-width: 45px;
+  text-align: center;
+}
+
+.highlight-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Downloadable Resources List */
+.resources-download-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.download-resource-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  transition: var(--transition-smooth);
+}
+
+.download-resource-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(56, 189, 248, 0.1);
+}
+
+.resource-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.resource-icon {
+  font-size: 1.5rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.resource-text h5 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.resource-text p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.text-red { color: #ef4444; }
+
+/* Responsive Grid */
+@media (max-width: 900px) {
+  .resources-updates-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -746,6 +746,100 @@ print(f"Squared items: {squared}")
       </div>
     </section>
 
+    <!-- Resources & Python Updates Hub -->
+    <section class="resources-updates-section" id="resources-updates">
+      <div class="section-header">
+        <span class="section-pre">Learning Enhancements</span>
+        <h2 class="section-title">Resources & Python Updates Hub</h2>
+        <p class="section-desc">Stay updated with Python's active release cycle and download offline cheat sheets, guides, and raw datasets.</p>
+      </div>
+
+      <div class="resources-updates-grid">
+        <!-- Left Column: Python Releases & Lifecycle Timeline -->
+        <div class="lifecycle-card">
+          <div class="card-header-with-badge">
+            <h3><i class="fa-brands fa-python text-cyan"></i> Python Version Lifecycle Tracker</h3>
+            <span class="status-badge-inline" id="tracker-sync-badge"><i class="fa-solid fa-circle-check text-mint"></i> Synced</span>
+          </div>
+          <p class="card-subtitle">Showing active, supported Python release cycles and their current statuses.</p>
+          
+          <div class="lifecycle-timeline" id="lifecycle-timeline-container">
+            <div class="timeline-loading"><i class="fa-solid fa-spinner fa-spin text-cyan"></i> Resolving Python version streams...</div>
+          </div>
+          
+          <div class="updates-highlights">
+            <h4><i class="fa-solid fa-bolt text-gold"></i> Latest Language Feature Highlights</h4>
+            <div class="highlight-list">
+              <div class="highlight-item">
+                <span class="version-tag">v3.13</span>
+                <p>New interactive REPL, improved compiler tracebacks, and experimental JIT compiler.</p>
+              </div>
+              <div class="highlight-item">
+                <span class="version-tag">v3.12</span>
+                <p>Syntactic formalization of f-string quotes, PEP 695 generic types syntax, and low-overhead profiling.</p>
+              </div>
+              <div class="highlight-item">
+                <span class="version-tag">v3.11</span>
+                <p>Exception groups, fine-grained tracebacks, and 10-60% execution speedups via the Specialized Adaptive Interpreter.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Downloadable Resources Hub -->
+        <div class="downloadable-resources-card">
+          <h3><i class="fa-solid fa-folder-open text-gold"></i> Downloadable Resource Center</h3>
+          <p class="card-subtitle">Equip yourself with cheat sheets, local slides, and sample datasets to learn off-platform.</p>
+          
+          <div class="resources-download-list">
+            <div class="download-resource-item">
+              <div class="resource-info">
+                <div class="resource-icon"><i class="fa-solid fa-file-pdf text-red"></i></div>
+                <div class="resource-text">
+                  <h5>Python Foundational Cheat Sheet (PDF)</h5>
+                  <p>Syntax references, variable heap bindings, collections mutability, and scoping (LEGB).</p>
+                </div>
+              </div>
+              <a href="#" class="btn btn-mint btn-sm" onclick="alert('Downloading Cheat Sheet PDF simulation...'); return false;"><i class="fa-solid fa-download"></i> Get PDF</a>
+            </div>
+
+            <div class="download-resource-item">
+              <div class="resource-info">
+                <div class="resource-icon"><i class="fa-solid fa-file-csv text-mint"></i></div>
+                <div class="resource-text">
+                  <h5>Data Forge Sales Dataset (CSV)</h5>
+                  <p>The full 24-record Jan-Dec dataset from the Explorer table to run local Python analyzers.</p>
+                </div>
+              </div>
+              <a href="#" class="btn btn-mint btn-sm" id="download-sales-csv-btn"><i class="fa-solid fa-download"></i> Get CSV</a>
+            </div>
+
+            <div class="download-resource-item">
+              <div class="resource-info">
+                <div class="resource-icon"><i class="fa-solid fa-file-zipper text-gold"></i></div>
+                <div class="resource-text">
+                  <h5>Curated Study Slides (ZIP)</h5>
+                  <p>Offline bundle containing 9 slides decks covering spark, files, and libraries lessons.</p>
+                </div>
+              </div>
+              <a href="#" class="btn btn-mint btn-sm" onclick="alert('Downloading Slides Bundle ZIP simulation...'); return false;"><i class="fa-solid fa-download"></i> Get ZIP</a>
+            </div>
+
+            <div class="download-resource-item">
+              <div class="resource-info">
+                <div class="resource-icon"><i class="fa-solid fa-file-code text-cyan"></i></div>
+                <div class="resource-text">
+                  <h5>Pure Python Sample Scripts</h5>
+                  <p>Contains local `.py` scripts for Outlier Z-score calculations and JWT token simulations.</p>
+                </div>
+              </div>
+              <a href="#" class="btn btn-mint btn-sm" onclick="alert('Downloading Sample Scripts simulation...'); return false;"><i class="fa-solid fa-download"></i> Get Scripts</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Global Footer -->

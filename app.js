@@ -505,10 +505,14 @@ document.addEventListener('DOMContentLoaded', () => {
     { id: "dHANJ4l6fwA", phase: "ignition", title: "Control Flows & Loops", desc: "How python iterators trigger list loops and evaluate conditions.", duration: "14:20" },
     { id: "u-OMNv_LYRA", phase: "build", title: "Function Scoping & LEGB Rules", desc: "A clean walkthrough of enclosing ranges, namespace priorities, and nonlocals.", duration: "16:05" },
     { id: "3dt4OGnU5sM", phase: "build", title: "List Comprehensions Optimization", desc: "Making your codes faster using inline collections declaration and filtering.", duration: "11:55" },
+    { id: "h1h2F3D4s5g", phase: "build", title: "Regex Parsing & Email/URL Checker", desc: "Deep dive into compiled patterns, string scanning, and group extraction with Python's re module.", duration: "21:30" },
+    { id: "r7Ds7w8A4s8", phase: "build", title: "JWT Tokens & Signature Hashing", desc: "Learn base64url encoding, header/payload structures, and signature checks using hmac and hashlib.", duration: "24:10" },
     { id: "wFcDGy_G6dM", phase: "architect", title: "Classes & Instance Heap Space", desc: "Learn class constructor properties, attribute lookups, and heap layout.", duration: "25:30" },
     { id: "3ohzBxoFHAY", phase: "architect", title: "Magic (Dunder) Methods", desc: "Hook your custom classes into len(), str() and arithmetic operator overloading.", duration: "15:10" },
     { id: "FsAPt_9BdxU", phase: "scale", title: "Decorators & Closures", desc: "Deep dive into wrapper structures, functional decorators, and scopes.", duration: "22:45" },
-    { id: "tmeK5Gef5XA", phase: "scale", title: "Generators & Yield Statements", desc: "How generator functions freeze local scopes to loop data efficiently.", duration: "19:10" }
+    { id: "tmeK5Gef5XA", phase: "scale", title: "Generators & Yield Statements", desc: "How generator functions freeze local scopes to loop data efficiently.", duration: "19:10" },
+    { id: "t8g8F7HkY3Y", phase: "scale", title: "Python Outlier Detection & Z-Score", desc: "How to calculate variance, standard deviation, and detect statistical anomalies.", duration: "16:45" },
+    { id: "q1q2W3E4r5t", phase: "scale", title: "Memoization Decorators Speedup", desc: "Speed up recursive algorithms by caching computation states in functional closures.", duration: "18:20" }
   ];
 
   const videoGrid = document.getElementById('video-grid');
@@ -1418,6 +1422,82 @@ sys.stderr = io.StringIO()
   async function runAutoSync() {
     const syncStatusText = document.getElementById('sync-status-text');
     const footerDocsLink = document.getElementById('footer-docs-link');
+    const trackerSyncBadge = document.getElementById('tracker-sync-badge');
+
+    const fallbackCycles = [
+      { cycle: "3.14", releaseDate: "2025-10-07", eol: "2030-10-31", latest: "3.14.5", support: "2027-10-01" },
+      { cycle: "3.13", releaseDate: "2024-10-07", eol: "2029-10-31", latest: "3.13.13", support: "2026-10-01" },
+      { cycle: "3.12", releaseDate: "2023-10-02", eol: "2028-10-31", latest: "3.12.13", support: "2025-04-02" },
+      { cycle: "3.11", releaseDate: "2022-10-24", eol: "2027-10-31", latest: "3.11.15", support: "2024-04-01" }
+    ];
+
+    function populateTimeline(cycles) {
+      const timelineContainer = document.getElementById('lifecycle-timeline-container');
+      if (!timelineContainer) return;
+      timelineContainer.innerHTML = '';
+
+      const today = new Date();
+
+      const parseDate = (dStr) => {
+        if (!dStr) return null;
+        if (typeof dStr === 'boolean') return null;
+        return new Date(dStr);
+      };
+
+      const formatDate = (dateStr) => {
+        if (!dateStr) return 'Unknown';
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        return `${months[d.getMonth()]} ${d.getFullYear()}`;
+      };
+
+      cycles.forEach(item => {
+        const releaseDate = parseDate(item.releaseDate);
+        const eolDate = parseDate(item.eol);
+        const supportDate = parseDate(item.support);
+
+        let statusClass = 'status-eol';
+        let statusLabel = 'End of Life';
+
+        if (eolDate && today >= eolDate) {
+          statusClass = 'status-eol';
+          statusLabel = 'End of Life';
+        } else if (supportDate && today >= supportDate) {
+          statusClass = 'status-security';
+          statusLabel = 'Security Support';
+        } else {
+          statusClass = 'status-supported';
+          statusLabel = 'Active Support';
+        }
+
+        let progressPercent = 100;
+        if (releaseDate && eolDate) {
+          const totalDuration = eolDate.getTime() - releaseDate.getTime();
+          const elapsed = today.getTime() - releaseDate.getTime();
+          if (totalDuration > 0) {
+            progressPercent = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+          }
+        }
+
+        const timelineItem = document.createElement('div');
+        timelineItem.className = 'timeline-item';
+        timelineItem.innerHTML = `
+          <div class="timeline-version-info">
+            <span class="timeline-version-name">Python ${item.cycle} (v${item.latest || item.cycle})</span>
+            <span class="timeline-version-badge ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="timeline-progress-bar-container">
+            <div class="timeline-progress-bar ${statusClass}" style="width: ${progressPercent.toFixed(1)}%;"></div>
+          </div>
+          <div class="timeline-dates">
+            <span>Released: ${formatDate(item.releaseDate)}</span>
+            <span>EOL: ${formatDate(item.eol)}</span>
+          </div>
+        `;
+        timelineContainer.appendChild(timelineItem);
+      });
+    }
 
     try {
       // 1. Fetch latest Python release cycle details from endoflife.date
@@ -1440,14 +1520,28 @@ sys.stderr = io.StringIO()
         if (syncStatusText) {
           syncStatusText.innerHTML = `<i class="fa-solid fa-circle-check text-mint"></i> Synced with Python v${pyVer}`;
         }
+
+        if (trackerSyncBadge) {
+          trackerSyncBadge.innerHTML = `<i class="fa-solid fa-circle-check text-mint"></i> Synced`;
+        }
         
         console.log(`[Auto-Sync] Python version data resolved: v${pyVer} (Cycle: ${pyCycle})`);
+
+        // Render timeline with top 4 cycles
+        const topCycles = data.slice(0, 4);
+        populateTimeline(topCycles);
       }
     } catch (err) {
       console.warn('[Auto-Sync] Failed to fetch Python release data: ', err);
       if (syncStatusText) {
         syncStatusText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-gold"></i> Offline (using Python 3.11 docs)`;
       }
+      if (trackerSyncBadge) {
+        trackerSyncBadge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-gold"></i> Offline`;
+      }
+
+      // Fallback timeline render
+      populateTimeline(fallbackCycles);
     }
 
     try {
@@ -2534,6 +2628,56 @@ sys.stderr = io.StringIO()
   dataCodeTextarea.value = dataTemplates['data-avg'];
   updateDataLineNumbers(dataTemplates['data-avg']);
   highlightExplorerTable('data-avg');
+
+  // Download Sales CSV handler
+  const downloadSalesCsvBtn = document.getElementById('download-sales-csv-btn');
+  if (downloadSalesCsvBtn) {
+    downloadSalesCsvBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const salesData = [
+        {"month": "Jan", "region": "North", "category": "Software", "units": 450, "revenue": 12000, "discount": "No"},
+        {"month": "Jan", "region": "South", "category": "Hardware", "units": 600, "revenue": 15000, "discount": "Yes"},
+        {"month": "Feb", "region": "North", "category": "Software", "units": 500, "revenue": 14000, "discount": "No"},
+        {"month": "Feb", "region": "South", "category": "Hardware", "units": 720, "revenue": 18000, "discount": "No"},
+        {"month": "Mar", "region": "North", "category": "Services", "units": 580, "revenue": 16500, "discount": "Yes"},
+        {"month": "Mar", "region": "South", "category": "Software", "units": 800, "revenue": 20000, "discount": "No"},
+        {"month": "Apr", "region": "North", "category": "Hardware", "units": 620, "revenue": 17500, "discount": "No"},
+        {"month": "Apr", "region": "South", "category": "Services", "units": 850, "revenue": 22000, "discount": "Yes"},
+        {"month": "May", "region": "North", "category": "Software", "units": 700, "revenue": 19500, "discount": "No"},
+        {"month": "May", "region": "South", "category": "Hardware", "units": 900, "revenue": 24000, "discount": "Yes"},
+        {"month": "Jun", "region": "North", "category": "Services", "units": 850, "revenue": 24000, "discount": "No"},
+        {"month": "Jun", "region": "South", "category": "Software", "units": 1050, "revenue": 29000, "discount": "Yes"},
+        {"month": "Jul", "region": "North", "category": "Software", "units": 800, "revenue": 23000, "discount": "Yes"},
+        {"month": "Jul", "region": "South", "category": "Hardware", "units": 1000, "revenue": 28000, "discount": "No"},
+        {"month": "Aug", "region": "North", "category": "Software", "units": 750, "revenue": 21500, "discount": "No"},
+        {"month": "Aug", "region": "South", "category": "Hardware", "units": 950, "revenue": 26500, "discount": "Yes"},
+        {"month": "Sep", "region": "North", "category": "Services", "units": 880, "revenue": 25000, "discount": "Yes"},
+        {"month": "Sep", "region": "South", "category": "Software", "units": 1100, "revenue": 30500, "discount": "No"},
+        {"month": "Oct", "region": "North", "category": "Hardware", "units": 900, "revenue": 26000, "discount": "No"},
+        {"month": "Oct", "region": "South", "category": "Services", "units": 1200, "revenue": 33000, "discount": "Yes"},
+        {"month": "Nov", "region": "North", "category": "Software", "units": 950, "revenue": 27500, "discount": "Yes"},
+        {"month": "Nov", "region": "South", "category": "Hardware", "units": 1300, "revenue": 35500, "discount": "No"},
+        {"month": "Dec", "region": "North", "category": "Software", "units": 1100, "revenue": 32000, "discount": "Yes"},
+        {"month": "Dec", "region": "South", "category": "Services", "units": 1500, "revenue": 41000, "discount": "Yes"}
+      ];
+      const headers = ["Month", "Region", "Category", "Units Sold", "Revenue", "Discount"];
+      let csvContent = headers.join(",") + "\n";
+      salesData.forEach(row => {
+        csvContent += `${row.month},${row.region},${row.category},${row.units},${row.revenue},${row.discount}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "pyforge_yearly_sales_data.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      addXP(15);
+    });
+  }
 
   // Trigger auto sync on startup
   runAutoSync();
