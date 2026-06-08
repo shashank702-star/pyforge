@@ -32,7 +32,7 @@
             <defs>
               <linearGradient id="python-gradient" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stop-color="#38bdf8" />
-                <stop offset="100%" stop-color="#fbbf24" />
+                <stop offset="100%" stop-color="#2563eb" />
               </linearGradient>
             </defs>
           </svg>
@@ -85,23 +85,30 @@
 
       <!-- Animated Code Block Widget in Hero -->
       <div class="hero-code-widget">
-        <div class="widget-header">
-          <div class="widget-dots">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
+        <div class="widget-header-tabs">
+          <div class="widget-header-left">
+            <div class="widget-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
           </div>
-          <span class="widget-title"><i class="fa-brands fa-python"></i> recursion_depth.py</span>
+          <div class="widget-tabs-container">
+            <button class="hero-tab-btn active" id="hero-tab-interactive"><i class="fa-solid fa-code"></i> Interactive Code</button>
+            <button class="hero-tab-btn" id="hero-tab-video"><i class="fa-solid fa-play"></i> Demo Video</button>
+          </div>
         </div>
-        <div class="widget-body">
+
+        <!-- Interactive Panel -->
+        <div class="widget-body" id="hero-panel-interactive">
           <pre class="code-editor-mock"><code class="fira-code"><span class="keyword">def</span> <span class="function">factorial</span>(n):
     <span class="comment"># Tracing recursion path</span>
     <span class="keyword">if</span> n <= <span class="number">1</span>:
         <span class="keyword">return</span> <span class="number">1</span>
     <span class="keyword">return</span> n * <span class="function">factorial</span>(n - <span class="number">1</span>)
 
-<span class="comment"># Output tracking</span>
-print(factorial(<span class="number">5</span>))  <span class="comment"># Output: 120</span></code></pre>
+# Output tracking
+print(factorial(5))  # Output: 120</code></pre>
           <div class="widget-terminal">
             <div class="terminal-prompt">&gt;&gt;&gt; Running recursion_depth.py...</div>
             <div class="terminal-line"><span class="term-dim">[Step 1]</span> call: factorial(5)</div>
@@ -111,6 +118,11 @@ print(factorial(<span class="number">5</span>))  <span class="comment"># Output:
             <div class="terminal-line"><span class="term-dim">[Step 5]</span> call: factorial(1) -> returns 1</div>
             <div class="terminal-line text-mint"><span class="term-bold">Success:</span> Returned value: 120</div>
           </div>
+        </div>
+
+        <!-- Video Demo Panel -->
+        <div class="widget-body-video hidden" id="hero-panel-video">
+          <iframe src="https://www.youtube.com/embed/Y8Tko2yc5hA?enablejsapi=1" title="Python Installation & Launching Demo Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
       </div>
     </section>

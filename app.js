@@ -2679,6 +2679,30 @@ sys.stderr = io.StringIO()
     });
   }
 
+  // Hero Widget Tab switcher
+  const heroTabInteractive = document.getElementById('hero-tab-interactive');
+  const heroTabVideo = document.getElementById('hero-tab-video');
+  const heroPanelInteractive = document.getElementById('hero-panel-interactive');
+  const heroPanelVideo = document.getElementById('hero-panel-video');
+
+  if (heroTabInteractive && heroTabVideo && heroPanelInteractive && heroPanelVideo) {
+    heroTabInteractive.addEventListener('click', () => {
+      heroTabInteractive.classList.add('active');
+      heroTabVideo.classList.remove('active');
+      heroPanelInteractive.classList.remove('hidden');
+      heroPanelVideo.classList.add('hidden');
+      addXP(5);
+    });
+
+    heroTabVideo.addEventListener('click', () => {
+      heroTabVideo.classList.add('active');
+      heroTabInteractive.classList.remove('active');
+      heroPanelVideo.classList.remove('hidden');
+      heroPanelInteractive.classList.add('hidden');
+      addXP(15);
+    });
+  }
+
   // Trigger auto sync on startup
   runAutoSync();
 
