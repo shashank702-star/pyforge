@@ -2574,4 +2574,48 @@ section {
   }
 }
 
+/* ==========================================================================
+   15. SANDBOX SECURITY GUARD STYLING
+   ========================================================================== */
+.sandbox-security-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(96, 165, 250, 0.06);
+  border: 1px solid rgba(96, 165, 250, 0.15);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-smooth);
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--accent-mint);
+}
+
+.sandbox-security-badge.active {
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.3);
+  color: var(--accent-mint);
+}
+
+.sandbox-security-badge.disabled {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+}
+
+.sandbox-security-badge:hover {
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sandbox-security-badge.active:hover {
+  background: rgba(96, 165, 250, 0.18);
+}
+
+.sandbox-security-badge.disabled:hover {
+  background: rgba(239, 68, 68, 0.12);
+}
+
 

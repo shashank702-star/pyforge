@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const state = {
     xp: 0,
     currentBadge: 'Novice',
+    securityGuard: true,
     unlockedPhases: [1], // Phase 1 is unlocked initially
     currentSelectedTopic: 'intro',
     quizCurrentQuestionIndex: 0,
@@ -644,8 +645,124 @@ document.addEventListener('DOMContentLoaded', () => {
     terminalBody.scrollTop = terminalBody.scrollHeight;
   }
 
+  // ==========================================
+  // SANDBOX SECURITY GUARD UTILITIES & TOGGLE
+  // ==========================================
+  function validatePythonSecurity(code) {
+    // 1. Check for infinite loops (while True / while 1) without a break
+    const hasInfiniteLoopPattern = /while\s+(True|1|1\s*==\s*1)\s*:/i.test(code);
+    const hasBreak = /\bbreak\b/.test(code);
+    if (hasInfiniteLoopPattern && !hasBreak) {
+      return {
+        valid: false,
+        reason: "Infinite Loop Warning: A 'while True' pattern was found without a 'break' statement. To prevent browser lockups, PyForge has blocked execution."
+      };
+    }
+
+    // 2. Check for restricted imports
+    const restrictedModules = ['os', 'sys', 'subprocess', 'shutil', 'socket', 'urllib', 'requests', 'js', 'pyodide'];
+    const lines = code.split('\n');
+    for (let line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('#')) continue;
+
+      const matchImport = trimmed.match(/^import\s+(.+)$/);
+      if (matchImport) {
+        const modules = matchImport[1].split(',').map(m => m.trim().split(/\s+/)[0]);
+        for (let mod of modules) {
+          if (restrictedModules.includes(mod)) {
+            return {
+              valid: false,
+              reason: `Security Violation: Importing the module '${mod}' is restricted in the PyForge Sandbox to prevent host system or network compromises.`
+            };
+          }
+        }
+      }
+
+      const matchFrom = trimmed.match(/^from\s+([a-zA-Z0-9_]+)\s+import/);
+      if (matchFrom) {
+        const mod = matchFrom[1].trim();
+        if (restrictedModules.includes(mod)) {
+          return {
+            valid: false,
+            reason: `Security Violation: Importing from the module '${mod}' is restricted in the PyForge Sandbox to prevent host system or network compromises.`
+          };
+        }
+      }
+    }
+
+    // 3. Check for dynamic execution (eval, exec)
+    const hasDynamicExec = /\b(eval|exec)\s*\(/i.test(code);
+    if (hasDynamicExec) {
+      return {
+        valid: false,
+        reason: "Security Violation: Direct execution of dynamic code using 'eval()' or 'exec()' is restricted in the PyForge Sandbox to prevent payload injection."
+      };
+    }
+
+    return { valid: true };
+  }
+
+  // Sandbox Security Guard Sync and Toggle Logic
+  const playgroundSecurityToggle = document.getElementById('sandbox-security-toggle');
+  const dataSecurityToggle = document.getElementById('data-security-toggle');
+
+  function updateSecurityUI(enabled) {
+    state.securityGuard = enabled;
+    const toggles = [playgroundSecurityToggle, dataSecurityToggle];
+    toggles.forEach(toggle => {
+      if (!toggle) return;
+      
+      const shieldIcon = toggle.querySelector('i');
+      const textSpan = toggle.querySelector('span');
+
+      if (enabled) {
+        toggle.className = 'sandbox-security-badge active';
+        if (shieldIcon) {
+          shieldIcon.className = 'fa-solid fa-shield-halved';
+        }
+        if (textSpan) {
+          textSpan.textContent = 'Security: Active';
+        }
+      } else {
+        toggle.className = 'sandbox-security-badge disabled';
+        if (shieldIcon) {
+          shieldIcon.className = 'fa-solid fa-shield';
+        }
+        if (textSpan) {
+          textSpan.textContent = 'Security: Disabled';
+        }
+      }
+    });
+  }
+
+  if (playgroundSecurityToggle) {
+    playgroundSecurityToggle.addEventListener('click', () => {
+      updateSecurityUI(!state.securityGuard);
+      addXP(5);
+    });
+  }
+
+  if (dataSecurityToggle) {
+    dataSecurityToggle.addEventListener('click', () => {
+      updateSecurityUI(!state.securityGuard);
+      addXP(5);
+    });
+  }
+
   async function executePythonCode(code) {
     clearTerminal();
+    
+    if (state.securityGuard) {
+      const securityCheck = validatePythonSecurity(code);
+      if (!securityCheck.valid) {
+        logTerminal('>>> Running security checks...', 'system');
+        logTerminal(securityCheck.reason, 'err');
+        logTerminal('\nExecution aborted due to security violation.', 'err');
+        return;
+      }
+    }
+
     logTerminal('>>> Running script.py...', 'system');
 
     if (pyodideInstance) {
@@ -2237,6 +2354,17 @@ print(f"[[ {json_payload} ]]")
   // Execute CPython WebAssembly
   async function executeDataAnalysisCode(code) {
     clearDataTerminal();
+    
+    if (state.securityGuard) {
+      const securityCheck = validatePythonSecurity(code);
+      if (!securityCheck.valid) {
+        logDataTerminal('>>> Running security checks...', 'system');
+        logDataTerminal(securityCheck.reason, 'err');
+        logDataTerminal('\nAnalysis aborted due to security violation.', 'err');
+        return;
+      }
+    }
+
     logDataTerminal('>>> Processing sandbox analysis...', 'system');
     
     // Inject the mock sales data before compiling user script

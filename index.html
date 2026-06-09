@@ -375,6 +375,11 @@ print(factorial(5))  # Output: 120</code></pre>
                 <option value="jwt-generator">Real Scenario: JWT Token Generator</option>
               </select>
             </div>
+            <!-- Sandbox Security Guard Toggle -->
+            <div class="sandbox-security-badge active" id="sandbox-security-toggle" title="Toggle Sandbox Security Guard (blocks infinite loops, system/browser imports, and dynamic exec)">
+              <i class="fa-solid fa-shield-halved" id="security-shield-icon"></i>
+              <span id="security-status-text">Security: Active</span>
+            </div>
             <!-- Sandbox Status Indicator Badge -->
             <div class="sandbox-status-badge" id="sandbox-status">
               <span class="status-dot state-loading"></span>
@@ -560,6 +565,11 @@ print(f"Squared items: {squared}")
                   <option value="data-quarter">Quarterly Trend Summary</option>
                   <option value="data-custom">-- Write Custom Analyzer --</option>
                 </select>
+              </div>
+              <!-- Sandbox Security Guard Toggle -->
+              <div class="sandbox-security-badge active" id="data-security-toggle" title="Toggle Sandbox Security Guard (blocks infinite loops, system/browser imports, and dynamic exec)" style="margin-left: auto; margin-right: 12px;">
+                <i class="fa-solid fa-shield-halved" id="data-security-shield-icon"></i>
+                <span id="data-security-status-text">Security: Active</span>
               </div>
               <div class="editor-controls">
                 <button class="btn btn-mint btn-sm" id="run-data-code-btn" disabled><i class="fa-solid fa-play"></i> Run Analysis</button>
