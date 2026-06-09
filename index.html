@@ -373,6 +373,7 @@ print(factorial(5))  # Output: 120</code></pre>
                 <option value="regex-validator">Real Scenario: Regex Validator</option>
                 <option value="bst-tree">Real Scenario: Binary Search Tree</option>
                 <option value="jwt-generator">Real Scenario: JWT Token Generator</option>
+                <option value="security-attack">Security: Telemetry Attack Demo</option>
               </select>
             </div>
             <!-- Sandbox Security Guard Toggle -->
@@ -408,12 +409,25 @@ print(f"Squared items: {squared}")
 
         <!-- Terminal Console Pane -->
         <div class="terminal-pane">
-          <div class="pane-header">
-            <span><i class="fa-solid fa-terminal"></i> Interactive Console</span>
+          <div class="pane-header-tabs">
+            <div class="terminal-tabs-container">
+              <button class="terminal-tab-btn active" id="terminal-tab-stdout"><i class="fa-solid fa-terminal"></i> Output Console</button>
+              <button class="terminal-tab-btn" id="terminal-tab-network"><i class="fa-solid fa-network-wired"></i> Network Intrusion Logs</button>
+            </div>
             <button class="clear-terminal" id="clear-terminal-btn"><i class="fa-solid fa-trash-can"></i> Clear</button>
           </div>
+          
+          <!-- Tab 1 Panel: Output Console -->
           <div class="terminal-body" id="terminal-body">
             <div class="terminal-output-line output-system">&gt;&gt;&gt; Ready to execute scripts. Click 'Run Code' above.</div>
+          </div>
+
+          <!-- Tab 2 Panel: Network Intrusion logs -->
+          <div class="terminal-body hidden" id="network-log-body">
+            <div class="network-empty-state" style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.9rem; margin: auto;">
+              <i class="fa-solid fa-shield-halved text-mint" style="font-size: 1.8rem; display: block; margin-bottom: 12px;"></i>
+              Network Intrusion Tracker Active. Running outbound audits...
+            </div>
           </div>
         </div>
       </div>

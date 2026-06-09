@@ -2618,4 +2618,110 @@ section {
   background: rgba(239, 68, 68, 0.12);
 }
 
+/* ==========================================================================
+   16. TABBED TERMINAL & NETWORK INTRUSION LOGS STYLING
+   ========================================================================== */
+.pane-header-tabs {
+  background: rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid var(--border-glass);
+  padding: 0 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  height: 48px;
+}
+
+.terminal-tabs-container {
+  display: flex;
+  height: 100%;
+}
+
+.terminal-tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+.terminal-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.terminal-tab-btn.active {
+  color: var(--accent-cyan);
+  border-bottom-color: var(--accent-cyan);
+  background: rgba(56, 189, 248, 0.04);
+}
+
+/* Network Intrusion Log Items */
+.network-log-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  animation: netPop 0.25s ease-out forwards;
+}
+
+@keyframes netPop {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.network-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.network-log-url {
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.net-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.net-badge.allowed {
+  background: rgba(96, 165, 250, 0.12);
+  color: var(--accent-mint);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+}
+
+.net-badge.blocked {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.network-log-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
 
