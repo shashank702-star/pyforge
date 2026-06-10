@@ -17,6 +17,12 @@
   <link rel="stylesheet" href="styles.css">
   <!-- FontAwesome Icons (Via CDN for premium iconography) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- PWA Meta Tags & Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#38bdf8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 
@@ -51,6 +57,7 @@
       </nav>
 
       <div class="user-stats" id="user-stats">
+        <button id="pwa-install-btn" class="btn btn-accent btn-sm hidden" style="margin-right: 12px; font-size: 0.75rem; padding: 4px 10px; display: flex; align-items: center; gap: 4px;"><i class="fa-solid fa-download"></i> Install App</button>
         <div class="stat-badge">
           <i class="fa-solid fa-bolt text-gold"></i>
           <span class="stat-val" id="xp-display">0 XP</span>

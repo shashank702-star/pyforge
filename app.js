@@ -2959,5 +2959,51 @@ sys.stderr = io.StringIO()
   // Trigger auto sync on startup
   runAutoSync();
 
+  // ==========================================
+  // 17. PROGRESSIVE WEB APP (PWA) INTEGRATION
+  // ==========================================
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('[Service Worker] Registered successfully', reg.scope))
+        .catch(err => console.error('[Service Worker] Registration failed', err));
+    });
+  }
+
+  let deferredPrompt = null;
+  const installBtn = document.getElementById('pwa-install-btn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) {
+      installBtn.classList.remove('hidden');
+    }
+  });
+
+  if (installBtn) {
+    installBtn.addEventListener('click', () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('[PWA] User accepted the install prompt');
+          addXP(15);
+        } else {
+          console.log('[PWA] User dismissed the install prompt');
+        }
+        deferredPrompt = null;
+        installBtn.classList.add('hidden');
+      });
+    });
+  }
+
+  window.addEventListener('appinstalled', () => {
+    console.log('[PWA] PyForge was installed successfully!');
+    if (installBtn) {
+      installBtn.classList.add('hidden');
+    }
+  });
+
 });
 
