@@ -16,7 +16,10 @@ const ASSETS = [
   './notes/libraries_notes.md',
   './notes/oop_notes.md',
   './notes/structures_notes.md',
-  './notes/variables_notes.md'
+  './notes/variables_notes.md',
+  './notes/api_notes.md',
+  './notes/concurrency_notes.md',
+  './notes/metaprogramming_notes.md'
 ];
 
 // Install Event
