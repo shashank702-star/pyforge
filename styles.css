@@ -2724,4 +2724,95 @@ section {
   color: var(--text-muted);
 }
 
+/* ==========================================================================
+   17. ACADEMY UPGRADES (AST, DEBUGGER, REPL, TUTOR) STYLING
+   ========================================================================== */
+
+/* Playground View Tabs */
+.playground-tab-btn:hover {
+  color: var(--text-primary) !important;
+}
+
+.playground-tab-btn.active {
+  color: var(--accent-cyan) !important;
+  border-bottom-color: var(--accent-cyan) !important;
+}
+
+/* AST Tree View Node hierarchy */
+.ast-tree-node {
+  display: flex;
+  flex-direction: column;
+  margin-left: 16px;
+  padding-left: 12px;
+  border-left: 1px dashed rgba(255, 255, 255, 0.1);
+  margin-top: 4px;
+}
+
+.ast-node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.02);
+  width: fit-content;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.ast-node-type {
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+
+.ast-node-val {
+  color: var(--accent-mint);
+}
+
+.ast-node-field {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* AI Tutor Chat Message Bubbles */
+.tutor-message.user {
+  align-items: flex-end !important;
+}
+
+.tutor-message.user .tutor-bubble {
+  background: var(--accent-cyan) !important;
+  color: var(--bg-dark) !important;
+  border-radius: 12px 12px 4px 12px !important;
+  font-weight: 500;
+}
+
+.tutor-toggle-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.55);
+}
+
+.tutor-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Visualizer Tabs */
+.canvas-tab-btn:hover {
+  color: var(--text-primary) !important;
+}
+
+.canvas-tab-btn.active {
+  color: var(--accent-cyan) !important;
+  border-bottom-color: var(--accent-cyan) !important;
+}
+
+/* Debugger Traced Line Highlighting */
+.vis-line.active {
+  background: rgba(56, 189, 248, 0.08);
+  border-left: 3px solid var(--accent-cyan);
+  padding-left: 6px;
+}
+
 

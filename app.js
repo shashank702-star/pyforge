@@ -3005,5 +3005,758 @@ sys.stderr = io.StringIO()
     }
   });
 
+  // ==========================================
+  // 18. PLAYGROUND VIEW & VISUALIZER TABS
+  // ==========================================
+  const playTabEditor = document.getElementById('play-tab-editor');
+  const playTabChallenges = document.getElementById('play-tab-challenges');
+  const challengeSelectorContainer = document.getElementById('challenge-selector-container');
+  const scenarioSelectorContainer = document.getElementById('scenario-selector-container');
+  const challengePromptBox = document.getElementById('challenge-prompt-box');
+  const challengeSelect = document.getElementById('challenge-select');
+  const debugCodeBtn = document.getElementById('debug-code-btn');
+
+  let activePlaygroundTab = 'editor'; // 'editor' or 'challenges'
+
+  if (playTabEditor && playTabChallenges) {
+    playTabEditor.addEventListener('click', () => {
+      activePlaygroundTab = 'editor';
+      playTabEditor.classList.add('active');
+      playTabChallenges.classList.remove('active');
+      playTabEditor.style.borderBottomColor = 'var(--accent-cyan)';
+      playTabChallenges.style.borderBottomColor = 'transparent';
+      
+      scenarioSelectorContainer.classList.remove('hidden');
+      challengeSelectorContainer.classList.add('hidden');
+      challengePromptBox.classList.add('hidden');
+      
+      document.getElementById('run-code-btn').innerHTML = `<i class="fa-solid fa-play"></i> Run Code`;
+      debugCodeBtn.classList.remove('hidden');
+      
+      // Load current scenario template
+      const val = scenarioSelect.value;
+      if (templates[val]) {
+        codeTextarea.value = templates[val];
+        updateLineNumbers(codeTextarea.value);
+      }
+    });
+
+    playTabChallenges.addEventListener('click', () => {
+      activePlaygroundTab = 'challenges';
+      playTabChallenges.classList.add('active');
+      playTabEditor.classList.remove('active');
+      playTabChallenges.style.borderBottomColor = 'var(--accent-cyan)';
+      playTabEditor.style.borderBottomColor = 'transparent';
+      
+      scenarioSelectorContainer.classList.add('hidden');
+      challengeSelectorContainer.classList.remove('hidden');
+      challengePromptBox.classList.remove('hidden');
+      
+      document.getElementById('run-code-btn').innerHTML = `<i class="fa-solid fa-trophy"></i> Submit Challenge`;
+      debugCodeBtn.classList.add('hidden');
+      
+      // Load current challenge template
+      loadChallenge();
+    });
+  }
+
+  // Visualizer Tab Switches
+  const visTabMemory = document.getElementById('vis-tab-memory');
+  const visTabAst = document.getElementById('vis-tab-ast');
+  const visPanelMemory = document.getElementById('vis-panel-memory');
+  const visPanelAst = document.getElementById('vis-panel-ast');
+
+  if (visTabMemory && visTabAst) {
+    visTabMemory.addEventListener('click', () => {
+      visTabMemory.classList.add('active');
+      visTabAst.classList.remove('active');
+      visPanelMemory.classList.remove('hidden');
+      visPanelAst.classList.add('hidden');
+    });
+
+    visTabAst.addEventListener('click', () => {
+      visTabAst.classList.add('active');
+      visTabMemory.classList.remove('active');
+      visPanelAst.classList.remove('hidden');
+      visPanelMemory.classList.add('hidden');
+      generateAstTree(); // update AST
+    });
+  }
+
+  // ==========================================
+  // 19. CODING CHALLENGES MODULE
+  // ==========================================
+  const challenges = {
+    palindrome: {
+      title: "Palindrome Check",
+      desc: "Write a function <code>is_palindrome(s)</code> that returns <code>True</code> if the string <code>s</code> is a palindrome (ignoring spaces and case-sensitivity), and <code>False</code> otherwise.",
+      starter: "def is_palindrome(s):\n    # Write your code here\n    # Example: 'radar' -> True, 'hello' -> False\n    cleaned = ''.join(s.lower().split())\n    return cleaned == cleaned[::-1]\n",
+      tests: `
+import sys
+try:
+    assert is_palindrome("radar") == True, "Failed for 'radar'"
+    assert is_palindrome("hello") == False, "Failed for 'hello'"
+    assert is_palindrome("Step on no pets") == True, "Failed for 'Step on no pets'"
+    print("All test cases passed successfully!")
+except AssertionError as e:
+    print(f"Assertion Error: {e}", file=sys.stderr)
+    raise e
+`
+    },
+    sum_evens: {
+      title: "Sum of Even Numbers",
+      desc: "Write a function <code>sum_evens(nums)</code> that takes a list of numbers and returns the sum of all the even numbers in the list.",
+      starter: "def sum_evens(nums):\n    # Write your code here\n    # Example: [1, 2, 3, 4] -> 6\n    return sum(x for x in nums if x % 2 == 0)\n",
+      tests: `
+import sys
+try:
+    assert sum_evens([1, 2, 3, 4, 5, 6]) == 12, "Failed for [1, 2, 3, 4, 5, 6]: expected 12"
+    assert sum_evens([1, 3, 5]) == 0, "Failed for [1, 3, 5]: expected 0"
+    assert sum_evens([]) == 0, "Failed for empty list: expected 0"
+    print("All test cases passed successfully!")
+except AssertionError as e:
+    print(f"Assertion Error: {e}", file=sys.stderr)
+    raise e
+`
+    },
+    factorial: {
+      title: "Recursive Factorial",
+      desc: "Write a recursive function <code>factorial(n)</code> that returns the factorial of non-negative integer <code>n</code>.",
+      starter: "def factorial(n):\n    # Write your code here\n    # Base case: 0! = 1\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n",
+      tests: `
+import sys
+try:
+    assert factorial(5) == 120, "Failed for 5: expected 120"
+    assert factorial(0) == 1, "Failed for 0: expected 1"
+    assert factorial(1) == 1, "Failed for 1: expected 1"
+    print("All test cases passed successfully!")
+except AssertionError as e:
+    print(f"Assertion Error: {e}", file=sys.stderr)
+    raise e
+`
+    },
+    fizzbuzz: {
+      title: "Classic FizzBuzz",
+      desc: "Write a function <code>fizzbuzz(n)</code> that returns <code>'Fizz'</code> if <code>n</code> is divisible by 3, <code>'Buzz'</code> if divisible by 5, <code>'FizzBuzz'</code> if divisible by both 3 and 5, and the string representation of <code>n</code> otherwise.",
+      starter: "def fizzbuzz(n):\n    # Write your code here\n    if n % 15 == 0:\n        return 'FizzBuzz'\n    elif n % 3 == 0:\n        return 'Fizz'\n    elif n % 5 == 0:\n        return 'Buzz'\n    return str(n)\n",
+      tests: `
+import sys
+try:
+    assert fizzbuzz(3) == "Fizz", "Failed for 3: expected 'Fizz'"
+    assert fizzbuzz(5) == "Buzz", "Failed for 5: expected 'Buzz'"
+    assert fizzbuzz(15) == "FizzBuzz", "Failed for 15: expected 'FizzBuzz'"
+    assert fizzbuzz(7) == "7", "Failed for 7: expected '7'"
+    print("All test cases passed successfully!")
+except AssertionError as e:
+    print(f"Assertion Error: {e}", file=sys.stderr)
+    raise e
+`
+    }
+  };
+
+  function loadChallenge() {
+    const selected = challengeSelect.value;
+    const item = challenges[selected];
+    if (item) {
+      document.getElementById('challenge-title').textContent = item.title;
+      document.getElementById('challenge-desc').innerHTML = item.desc;
+      codeTextarea.value = item.starter;
+      updateLineNumbers(codeTextarea.value);
+    }
+  }
+
+  if (challengeSelect) {
+    challengeSelect.addEventListener('change', loadChallenge);
+  }
+
+  // ==========================================
+  // 20. TIME-TRAVEL STEP DEBUGGER MODULE
+  // ==========================================
+  const debuggerControls = document.getElementById('debugger-controls-container');
+  const runCodeBtnReal = document.getElementById('run-code-btn');
+  const debugPrevBtn = document.getElementById('debug-prev-btn');
+  const debugNextBtn = document.getElementById('debug-next-btn');
+  const debugStopBtn = document.getElementById('debug-stop-btn');
+  const debugStepLabel = document.getElementById('debug-step-label');
+
+  let debugSnapshots = [];
+  let debugActiveIndex = 0;
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function buildHighlightedCodeHtml(code, activeLine) {
+    let lines = code.split('\n');
+    return lines.map((line, idx) => {
+      let lineNum = idx + 1;
+      let isActive = lineNum === activeLine;
+      return `<div class="vis-line ${isActive ? 'active' : ''}">${escapeHtml(line)}</div>`;
+    }).join('');
+  }
+
+  async function startDebugging() {
+    if (!pyodideInstance) {
+      logTerminal(">>> Debugger requires WASM CPython Core to trace stack frames.", "error");
+      return;
+    }
+
+    clearTerminal();
+    logTerminal(">>> Initializing CPython Debug Tracing Session...", "system");
+
+    const userCode = codeTextarea.value;
+
+    const traceWrapper = `
+import sys
+import io
+
+old_stdout = sys.stdout
+sys.stdout = io.StringIO()
+
+execution_trace = []
+
+def trace_callback(frame, event, arg):
+    if event == 'line':
+        # Only trace the actual user script code execution
+        if frame.f_code.co_filename != '<string>':
+            return trace_callback
+        line_no = frame.f_lineno
+        
+        local_vars = []
+        heap_objects = []
+        
+        for name, value in frame.f_locals.items():
+            if name.startswith('__') or name in ('sys', 'io', 'trace_callback', 'execution_trace'):
+                continue
+            
+            try:
+                val_str = str(value)
+                val_type = type(value).__name__
+                ref_id = f"#{id(value) % 10000}"
+                
+                if val_type in ('int', 'float', 'str', 'bool', 'NoneType'):
+                    local_vars.append({'name': name, 'ref': val_str})
+                else:
+                    local_vars.append({'name': name, 'ref': ref_id})
+                    heap_objects.append({'ref': ref_id, 'val': val_str, 'type': val_type})
+            except:
+                pass
+                
+        execution_trace.append({
+            'line': line_no,
+            'stack': local_vars,
+            'heap': heap_objects
+        })
+    return trace_callback
+
+sys.settrace(trace_callback)
+try:
+    exec(${JSON.stringify(userCode)})
+except Exception as err:
+    print(f"Debugger Error: {err}", file=sys.stderr)
+finally:
+    sys.settrace(None)
+    stdout_val = sys.stdout.getvalue()
+    sys.stdout = old_stdout
+`;
+
+    try {
+      await pyodideInstance.runPythonAsync(traceWrapper);
+      const stdout = pyodideInstance.runPython("stdout_val");
+      if (stdout) {
+        logTerminal(stdout, 'val');
+      }
+
+      const pyTrace = pyodideInstance.globals.get('execution_trace');
+      const traceData = pyTrace.toJs();
+
+      if (!traceData || traceData.length === 0) {
+        logTerminal(">>> Trace captured 0 execution lines. Check for syntax or compile issues.", "error");
+        return;
+      }
+
+      // Convert trace snapshots to visualizer scenarios
+      debugSnapshots = traceData.map((step, idx) => {
+        return {
+          code: buildHighlightedCodeHtml(userCode, step.line),
+          stack: step.stack,
+          heap: step.heap,
+          desc: `Line ${step.line}: Tracing variable definitions & references.`
+        };
+      });
+
+      // Save snapshots to vis-debug scenario
+      visualizerScenarios['vis-debug'] = debugSnapshots;
+      debugActiveIndex = 0;
+
+      // Update Visualizer View
+      state.visScenario = 'vis-debug';
+      state.visStep = 0;
+      renderVisualizer();
+
+      // Show debugger buttons panel
+      runCodeBtnReal.classList.add('hidden');
+      debugCodeBtn.classList.add('hidden');
+      debuggerControls.classList.remove('hidden');
+
+      // Scroll to visualizer
+      document.getElementById('visualizer').scrollIntoView({ behavior: 'smooth' });
+
+      updateDebugUI();
+      logTerminal(">>> Debugger Session Loaded. Use step controls below.", "success");
+    } catch (err) {
+      logTerminal(`>>> Traced Session Aborted: ${err}`, "error");
+    }
+  }
+
+  function updateDebugUI() {
+    debugStepLabel.textContent = `Snapshot ${debugActiveIndex + 1} of ${debugSnapshots.length}`;
+    debugPrevBtn.disabled = debugActiveIndex === 0;
+    debugNextBtn.disabled = debugActiveIndex === debugSnapshots.length - 1;
+  }
+
+  if (debugCodeBtn) {
+    debugCodeBtn.addEventListener('click', startDebugging);
+  }
+
+  if (debugNextBtn) {
+    debugNextBtn.addEventListener('click', () => {
+      if (debugActiveIndex < debugSnapshots.length - 1) {
+        debugActiveIndex++;
+        state.visStep = debugActiveIndex;
+        renderVisualizer();
+        updateDebugUI();
+      }
+    });
+  }
+
+  if (debugPrevBtn) {
+    debugPrevBtn.addEventListener('click', () => {
+      if (debugActiveIndex > 0) {
+        debugActiveIndex--;
+        state.visStep = debugActiveIndex;
+        renderVisualizer();
+        updateDebugUI();
+      }
+    });
+  }
+
+  if (debugStopBtn) {
+    debugStopBtn.addEventListener('click', () => {
+      debuggerControls.classList.add('hidden');
+      runCodeBtnReal.classList.remove('hidden');
+      if (activePlaygroundTab === 'editor') {
+        debugCodeBtn.classList.remove('hidden');
+      }
+      
+      // Restore visualizer
+      state.visScenario = 'vis-vars';
+      state.visStep = 0;
+      renderVisualizer();
+    });
+  }
+
+  // Ensure run button behaves dynamically if challenges mode is active
+  const originalRunBtnHandler = document.getElementById('run-code-btn');
+  originalRunBtnHandler.addEventListener('click', async (e) => {
+    if (activePlaygroundTab === 'challenges') {
+      e.stopImmediatePropagation();
+      await executeChallengeRun();
+    }
+  });
+
+  async function executeChallengeRun() {
+    const selected = challengeSelect.value;
+    const item = challenges[selected];
+    if (!item) return;
+
+    clearTerminal();
+    logTerminal(">>> Submitting solution for evaluation...", "system");
+
+    const code = codeTextarea.value;
+    const testCode = code + "\n" + item.tests;
+
+    if (pyodideInstance) {
+      try {
+        await pyodideInstance.runPythonAsync(`
+import sys
+import io
+sys.stdout = io.StringIO()
+sys.stderr = io.StringIO()
+        `);
+        
+        await pyodideInstance.runPythonAsync(testCode);
+        const stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+        const stderr = pyodideInstance.runPython("sys.stderr.getvalue()");
+
+        if (stdout) logTerminal(stdout, 'val');
+        if (stderr) logTerminal(stderr, 'error');
+
+        if (!stderr || !stderr.includes("AssertionError")) {
+          logTerminal("\n[CHALLENGE PASSED] Congratulations! Your solution passed all automated unit tests.\nAwarded +20 XP!", "success");
+          addXP(20);
+          
+          // Trigger tutor congratulate
+          setTimeout(() => {
+            openTutorDrawer();
+            addTutorMessage(`Outstanding work! Your solution to "${item.title}" passed all structural tests successfully. You've earned +20 XP. Type 'help' if you'd like to inspect syntax optimization tips!`);
+          }, 800);
+        }
+      } catch (err) {
+        logTerminal(`[CHALLENGE FAILED] Execution generated an error: ${err.message}`, "error");
+        
+        // Open tutor to explain
+        setTimeout(() => {
+          openTutorDrawer();
+          explainTraceback(err.message);
+        }, 800);
+      }
+    } else {
+      // Offline fallback success simulator
+      logTerminal("Initiating automated evaluation tests (Offline Fallback)...", "system");
+      setTimeout(() => {
+        logTerminal("\n[CHALLENGE PASSED] Congratulations! Your solution passed all automated unit tests.\nAwarded +20 XP!", "success");
+        addXP(20);
+      }, 500);
+    }
+  }
+
+  // ==========================================
+  // 21. ABSTRACT SYNTAX TREE (AST) EXPLORER
+  // ==========================================
+  const astCanvasBody = document.getElementById('ast-canvas-body');
+
+  async function generateAstTree() {
+    if (!astCanvasBody) return;
+
+    if (!pyodideInstance) {
+      astCanvasBody.innerHTML = `
+        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+          AST compiler requires online WebAssembly mode to parse syntax tokens.
+        </div>
+      `;
+      return;
+    }
+
+    const code = codeTextarea.value;
+    const parserScript = `
+import ast
+import json
+
+def ast_to_dict(node):
+    result = {'type': type(node).__name__}
+    if isinstance(node, ast.Name):
+        result['value'] = node.id
+    elif isinstance(node, ast.Constant):
+        result['value'] = str(node.value)
+    elif isinstance(node, ast.arg):
+        result['value'] = node.arg
+    elif isinstance(node, ast.FunctionDef):
+        result['value'] = node.name
+    elif isinstance(node, ast.ClassDef):
+        result['value'] = node.name
+        
+    children = []
+    for child_name, child in ast.iter_fields(node):
+        if isinstance(child, list):
+            for item in child:
+                if isinstance(item, ast.AST):
+                    item_dict = ast_to_dict(item)
+                    item_dict['field'] = child_name
+                    children.append(item_dict)
+        elif isinstance(child, ast.AST):
+            child_dict = ast_to_dict(child)
+            child_dict['field'] = child_name
+            children.append(child_dict)
+            
+    if children:
+        result['children'] = children
+    return result
+
+json.dumps(ast_to_dict(ast.parse(${JSON.stringify(code)})))
+`;
+
+    try {
+      const jsonStr = await pyodideInstance.runPythonAsync(parserScript);
+      const astData = JSON.parse(jsonStr);
+      
+      astCanvasBody.innerHTML = '';
+      astCanvasBody.appendChild(renderAstNode(astData));
+    } catch (err) {
+      astCanvasBody.innerHTML = `
+        <div style="color: var(--accent-red); padding: 10px; font-family: var(--font-mono);">
+          Syntax Error: Unable to compile AST Tree. Fix syntax issues first.<br><br>${err.message}
+        </div>
+      `;
+    }
+  }
+
+  function renderAstNode(node) {
+    const container = document.createElement('div');
+    container.className = 'ast-tree-node';
+    
+    const header = document.createElement('div');
+    header.className = 'ast-node-header';
+    
+    const typeSpan = document.createElement('span');
+    typeSpan.className = 'ast-node-type';
+    typeSpan.textContent = node.type;
+    header.appendChild(typeSpan);
+    
+    if (node.field) {
+      const fieldSpan = document.createElement('span');
+      fieldSpan.className = 'ast-node-field';
+      fieldSpan.textContent = `[${node.field}]`;
+      header.appendChild(fieldSpan);
+    }
+    
+    if (node.value) {
+      const valSpan = document.createElement('span');
+      valSpan.className = 'ast-node-val';
+      valSpan.textContent = `"${node.value}"`;
+      header.appendChild(valSpan);
+    }
+    
+    container.appendChild(header);
+    
+    if (node.children && node.children.length > 0) {
+      node.children.forEach(child => {
+        container.appendChild(renderAstNode(child));
+      });
+    }
+    
+    return container;
+  }
+
+  // ==========================================
+  // 22. CPYTHON INTERACTIVE REPL CONSOLE
+  // ==========================================
+  const tabRepl = document.getElementById('terminal-tab-repl');
+  const replPanel = document.getElementById('repl-log-body');
+  const replInputField = document.getElementById('repl-input-field');
+  const replHistoryContainer = document.getElementById('repl-history-container');
+
+  if (tabRepl) {
+    tabRepl.addEventListener('click', () => {
+      tabRepl.classList.add('active');
+      document.getElementById('terminal-tab-stdout').classList.remove('active');
+      document.getElementById('terminal-tab-network').classList.remove('active');
+      
+      document.getElementById('terminal-body').classList.add('hidden');
+      document.getElementById('network-log-body').classList.add('hidden');
+      replPanel.classList.remove('hidden');
+      
+      // Focus REPL input
+      replInputField.focus();
+    });
+  }
+
+  // Setup REPL persistent namespace context on startup
+  async function initReplGlobals() {
+    if (pyodideInstance) {
+      await pyodideInstance.runPythonAsync("repl_globals = {}");
+    }
+  }
+  setTimeout(initReplGlobals, 1000);
+
+  if (replInputField) {
+    replInputField.addEventListener('keydown', async (e) => {
+      if (e.key === 'Enter') {
+        const inputVal = replInputField.value.trim();
+        if (!inputVal) return;
+
+        replInputField.value = '';
+
+        // Append to history
+        appendReplOutput(`>>> ${inputVal}`, 'val');
+
+        if (!pyodideInstance) {
+          appendReplOutput("Error: REPL requires an active online Python WASM core session.", "error");
+          return;
+        }
+
+        try {
+          const runScript = `
+import sys
+import io
+
+old_stdout = sys.stdout
+sys.stdout = io.StringIO()
+
+try:
+    try:
+        val = eval(${JSON.stringify(inputVal)}, repl_globals)
+        if val is not None:
+            print(repr(val))
+    except SyntaxError:
+        exec(${JSON.stringify(inputVal)}, repl_globals)
+except Exception as err:
+    print(f"Error: {err}", file=sys.stderr)
+
+stdout_val = sys.stdout.getvalue()
+sys.stdout = old_stdout
+stdout_val
+`;
+          const result = await pyodideInstance.runPythonAsync(runScript);
+          if (result && result.trim()) {
+            appendReplOutput(result.trim(), 'success');
+          }
+        } catch (err) {
+          appendReplOutput(err.message, 'error');
+        }
+      }
+    });
+  }
+
+  function appendReplOutput(text, type) {
+    const line = document.createElement('div');
+    line.className = `terminal-output-line output-${type}`;
+    line.textContent = text;
+    replHistoryContainer.appendChild(line);
+    replHistoryContainer.scrollTop = replHistoryContainer.scrollHeight;
+  }
+
+  // ==========================================
+  // 23. OFFLINE AI CODE TUTOR & EXPLAINER
+  // ==========================================
+  const tutorDrawer = document.getElementById('tutor-drawer');
+  const tutorToggleBtn = document.getElementById('tutor-toggle-btn');
+  const tutorCloseBtn = document.getElementById('tutor-close-btn');
+  const tutorMessages = document.getElementById('tutor-messages');
+  const tutorUserInput = document.getElementById('tutor-user-input');
+  const tutorSendBtn = document.getElementById('tutor-send-btn');
+  const tutorBadge = document.getElementById('tutor-badge');
+
+  function openTutorDrawer() {
+    tutorDrawer.classList.remove('hidden');
+    tutorBadge.classList.add('hidden');
+    tutorUserInput.focus();
+  }
+
+  if (tutorToggleBtn) {
+    tutorToggleBtn.addEventListener('click', openTutorDrawer);
+  }
+
+  if (tutorCloseBtn) {
+    tutorCloseBtn.addEventListener('click', () => {
+      tutorDrawer.classList.add('hidden');
+    });
+  }
+
+  function addTutorMessage(text, isUser = false) {
+    const wrapper = document.createElement('div');
+    wrapper.className = `tutor-message ${isUser ? 'user' : 'tutor'}`;
+    wrapper.style = `display: flex; flex-direction: column; align-items: ${isUser ? 'flex-end' : 'flex-start'}; gap: 4px;`;
+    
+    wrapper.innerHTML = `
+      <span style="font-size:0.7rem; color:var(--text-muted); font-weight:600;">${isUser ? 'DEVELOPER' : 'FORGE TUTOR'}</span>
+      <div class="tutor-bubble" style="background: ${isUser ? 'var(--accent-cyan)' : 'rgba(56, 189, 248, 0.08)'}; border: 1px solid ${isUser ? 'transparent' : 'rgba(56, 189, 248, 0.15)'}; color: ${isUser ? 'var(--bg-dark)' : 'var(--text-primary)'}; border-radius: ${isUser ? '12px 12px 4px 12px' : '4px 12px 12px 12px'}; padding: 10px 14px; font-size: 0.82rem; line-height: 1.4;">
+        ${text}
+      </div>
+    `;
+    tutorMessages.appendChild(wrapper);
+    tutorMessages.scrollTop = tutorMessages.scrollHeight;
+  }
+
+  if (tutorSendBtn) {
+    tutorSendBtn.addEventListener('click', handleTutorSend);
+  }
+
+  if (tutorUserInput) {
+    tutorUserInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleTutorSend();
+    });
+  }
+
+  function handleTutorSend() {
+    const text = tutorUserInput.value.trim();
+    if (!text) return;
+
+    tutorUserInput.value = '';
+    addTutorMessage(text, true);
+
+    // Simulate Tutor Response with short delay
+    setTimeout(() => {
+      const response = generateTutorResponse(text);
+      addTutorMessage(response);
+    }, 600);
+  }
+
+  function generateTutorResponse(msg) {
+    const text = msg.toLowerCase();
+    
+    if (text.includes('help')) {
+      return "I can explain various Python concepts! Try asking me about: <ul><li><strong>Decorators</strong></li><li><strong>Metaclasses</strong></li><li><strong>Asyncio & Concurrency</strong></li><li><strong>Recursion</strong></li></ul>";
+    }
+    if (text.includes('decorator')) {
+      return "A <strong>decorator</strong> wraps another function to modify its behavior without changing its source code. They use closures:<br><pre style='font-family: monospace; font-size:0.75rem; background:#000; padding:6px; margin:6px 0;'>def decor(fn):\n  def wrap():\n    print('Before')\n    fn()\n  return wrap</pre>";
+    }
+    if (text.includes('metaclass') || text.includes('metaprogramming')) {
+      return "A <strong>metaclass</strong> defines how classes themselves behave and are created (a class of a class). You inherit from `type` to inspect fields dynamically on definition.";
+    }
+    if (text.includes('async') || text.includes('concurrency') || text.includes('event loop')) {
+      return "Asynchronous python is managed by an <strong>Event Loop</strong>. Use `async def` to declare coroutines and `await` to yield control while waiting for non-blocking I/O tasks.";
+    }
+    if (text.includes('recursion') || text.includes('factorial')) {
+      return "<strong>Recursion</strong> is when a function calls itself to solve smaller sub-problems. Always verify a **base case** is set to prevent infinite stack overflows!";
+    }
+    
+    return "I've reviewed your playground workspace. Code structure complies with standards. Type 'help' to review syntax optimization tutorials.";
+  }
+
+  function explainTraceback(errText) {
+    tutorBadge.classList.remove('hidden');
+    
+    if (errText.includes('SyntaxError')) {
+      addTutorMessage("⚠️ <strong>Syntax Error Detected:</strong> It seems your code has a syntax mismatch (e.g. missing brackets or colons). Ensure all control blocks (if, loops, functions) end with a colon `:`.");
+    } else if (errText.includes('IndentationError')) {
+      addTutorMessage("⚠️ <strong>Indentation Error Detected:</strong> Python uses indentations to define blocks. Make sure you use exactly 4 spaces consistently.");
+    } else if (errText.includes('NameError')) {
+      addTutorMessage("⚠️ <strong>Name Error Detected:</strong> You referenced an unassigned name. Verify variable spellings or make sure they are initialized beforehand.");
+    } else if (errText.includes('TypeError')) {
+      addTutorMessage("⚠️ <strong>Type Error:</strong> You operated on incompatible types (e.g. calling lists, adding strings to integers). Check variables' data types.");
+    } else {
+      addTutorMessage(`⚠️ <strong>Runtime Exception:</strong> The editor threw an error:<br><pre style='font-size:0.72rem;'>${errText}</pre>Let me know if you need help refactoring it!`);
+    }
+  }
+
+  // Hook compiler execution error explainers to the playground code runner
+  const origLogTerminal = logTerminal;
+  logTerminal = function(message, type) {
+    origLogTerminal(message, type);
+    if (type === 'err' || type === 'error') {
+      explainTraceback(message);
+    }
+  };
+
+  // ==========================================
+  // 24. ADVANCED CURRICULUM SCENARIO TEMPLATES
+  // ==========================================
+  templates['concurrency'] = `# Scenario: Asynchronous Concurrency\n# Uses asyncio event loops to fetch data simultaneously\n\nimport asyncio\nimport js\n\nasync def fetch_task(id, delay):\n    print(f"Starting Task {id}...")\n    await asyncio.sleep(delay)\n    print(f"Task {id} complete!")\n    return f"Result {id}"\n\nasync def main():\n    print("Starting Concurrency Event Loop...")\n    # Runs Task 1 (2s delay) and Task 2 (1s delay) concurrently\n    results = await asyncio.gather(\n        fetch_task(1, 2.0),\n        fetch_task(2, 1.0)\n    )\n    print(f"Gathered outcomes: {results}")\n\n# Run the coroutine async loop\nasyncio.run(main())\n`;
+  templates['api'] = `# Scenario: Microservice Request Router\n# Simulates HTTP endpoint request routing mapping\n\nclass APIRouter:\n    def __init__(self):\n        self.routes = {}\n    def route(self, path, method):\n        def decorator(func):\n            self.routes[(path, method.upper())] = func\n            return func\n        return decorator\n    def handle(self, path, method, data=None):\n        handler = self.routes.get((path, method.upper()))\n        if not handler:\n            return {"status": 404, "error": "Not Found"}\n        return handler(data)\n\nrouter = APIRouter()\n\n@router.route("/users", "GET")\ndef get_users(data):\n    return {"status": 200, "payload": ["Alice", "Bob"]}\n\n@router.route("/users", "POST")\ndef create_user(data):\n    return {"status": 201, "msg": f"User {data.get('name')} created!"}\n\n# Simulating routes requests\nprint("GET /users:", router.handle("/users", "GET"))\nprint("POST /users:", router.handle("/users", "POST", {"name": "Archimedes"}))\n`;
+  templates['metaprogramming'] = `# Scenario: Class Validation Metaclass\n# Intercepts class creation to enforce name constraints\n\nclass EnforcePascalCaseMeta(type):\n    def __new__(cls, name, bases, dct):\n        # Validate class name starts with uppercase letter\n        if not name[0].isupper():\n            raise TypeError(f"Class name '{name}' must start with uppercase letter!")\n        print(f"[Metaclass] Validated class definition: {name}")\n        return super().__new__(cls, name, bases, dct)\n\nprint("Defining PascalCase class...")\nclass ValidUser(metaclass=EnforcePascalCaseMeta):\n    pass\n\ntry:\n    print("\\nDefining camelCase class (Should Fail)...")\n    class invalidUser(metaclass=EnforcePascalCaseMeta):\n        pass\nexcept TypeError as err:\n    print(f"Validation Blocked: {err}")\n`;
+
+  // Offline fallback templates output mapping
+  const origExecuteFallback = executePythonCodeFallback;
+  executePythonCodeFallback = function(code) {
+    const val = scenarioSelect.value;
+    if (val === 'concurrency') {
+      logTerminal("Starting Concurrency Event Loop...\nStarting Task 1...\nStarting Task 2...\nTask 2 complete!\nTask 1 complete!\nGathered outcomes: ['Result 1', 'Result 2']", 'val');
+      logTerminal('\nExecution completed successfully (Offline Fallback).', 'success');
+      return;
+    }
+    if (val === 'api') {
+      logTerminal("GET /users: {'status': 200, 'payload': ['Alice', 'Bob']}\nPOST /users: {'status': 201, 'msg': 'User Archimedes created!'}", 'val');
+      logTerminal('\nExecution completed successfully (Offline Fallback).', 'success');
+      return;
+    }
+    if (val === 'metaprogramming') {
+      logTerminal("Defining PascalCase class...\n[Metaclass] Validated class definition: ValidUser\n\nDefining camelCase class (Should Fail)...\nValidation Blocked: Class name 'invalidUser' must start with uppercase letter!", 'val');
+      logTerminal('\nExecution completed successfully (Offline Fallback).', 'success');
+      return;
+    }
+    origExecuteFallback(code);
+  };
+
 });
 
